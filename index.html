@@ -109,13 +109,13 @@
     </button>
 
     <!-- BARRA FLOTANTE SELECCIÓN MÚLTIPLE -->
-    <div id="selection-bar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-40 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-4 rounded-full shadow-2xl flex items-center gap-4 z-[8000] pointer-events-none border border-slate-800 dark:border-slate-200">
+    <div id="selection-bar" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 translate-y-40 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-4 rounded-full shadow-2xl flex items-center gap-4 z-[8000] pointer-events-none border border-slate-800 dark:border-slate-200">
         <span id="selection-count" class="text-xs sm:text-sm font-black tracking-widest border-r border-slate-700 dark:border-slate-300 pr-4">0 SELECCIONADAS</span>
         <button onclick="borrarSeleccion()" class="text-xs sm:text-sm font-black text-red-400 hover:text-red-300 dark:text-red-500 dark:hover:text-red-600 flex items-center gap-1.5 transition-colors pointer-events-auto uppercase tracking-tighter">
             <i class="fas fa-trash-alt"></i> Borrar
         </button>
         <button onclick="cancelarSeleccion()" class="text-xs sm:text-sm font-bold text-slate-400 hover:text-white dark:text-slate-500 dark:hover:text-slate-800 flex items-center transition-colors pointer-events-auto pl-2 uppercase">
-            <i class="fas fa-times"></i>
+            <i class="fas fa-times"></i> Cancelar
         </button>
     </div>
 
@@ -252,6 +252,9 @@
             
             <!-- Botones de Acción adaptados a cuadrícula móvil -->
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full">
+                <button id="btn-lock" onclick="toggleLock()" class="col-span-2 sm:col-span-1 w-full sm:w-auto sm:flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-900/20 text-slate-600 dark:text-slate-400 hover:bg-slate-100 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-slate-200 dark:border-slate-800 transition-all flex items-center justify-center gap-1.5">
+                    <i class="fas fa-lock"></i> Bloquear
+                </button>
                 <button onclick="gestionarPerfiles()" class="w-full sm:w-auto sm:flex-1 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-indigo-200 dark:border-indigo-800 transition-all flex items-center justify-center gap-1.5">
                     <i class="fas fa-users-cog"></i> Perfiles
                 </button>
@@ -360,7 +363,7 @@
     <!-- MODAL AJUSTES -->
     <div id="modal-ajustes" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-6 sm:p-8 w-full max-w-lg shadow-2xl h-auto max-h-[90vh] flex flex-col border border-slate-700 mobile-modal-anim">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Ajustes del Sistema</h3>
                 <button onclick="cerrarModal('modal-ajustes')"><i class="fas fa-times-circle text-slate-300 text-3xl hover:text-red-500 transition-colors"></i></button>
             </div>
@@ -418,7 +421,7 @@
         </div>
     </div>
 
-    <!-- MODAL GUÍA MÉDICA DETALLADA -->
+    <!-- MODAL GUÍA MÉDICA DETALLADA (ACTUALIZADA Y COMPLETA) -->
     <div id="modal-ayuda" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
             <div class="bg-emerald-600 dark:bg-emerald-800 px-6 py-4 sm:px-8 sm:py-6 text-white flex justify-between items-center">
@@ -426,30 +429,85 @@
                 <button onclick="cerrarModal('modal-ayuda')"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
             <div id="contenido-guia-cientifica" class="p-5 sm:p-8 overflow-y-auto space-y-6 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-xs sm:text-sm">
+                
                 <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
                     <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7 a 9 horas | Adolescentes 8 a 10 horas.</p>
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos metabólicos. Es vital para fijar lo aprendido.</p>
-                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-indigo-500 underline mt-2 block tracking-widest">Fuente Oficial: NICHD NIH</a>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">Durante el sueño profundo y la fase REM, el cerebro activa el sistema glinfático para eliminar toxinas y residuos metabólicos acumulados durante el día. Es el momento crítico para la neuroplasticidad: sin este descanso, el cerebro es incapaz de consolidar y fijar lo aprendido, limitando tu rendimiento cognitivo a largo plazo.</p>
+                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-indigo-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente Oficial: NICHD NIH</a>
                 </div>
+
                 <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-blue-700 dark:text-blue-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo</h4>
-                    <p class="font-semibold text-slate-700 dark:text-slate-300">Bloques de 25 a 90 min + 15 min de pausa.</p>
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">Forzar la atención agota la glucosa prefrontal. Pausa para procesar.</p>
+                    <h4 class="font-black text-blue-700 dark:text-blue-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo (Deep Work)</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques de 25 a 90 min + 15 min de pausa total.</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">El cerebro humano no está diseñado para la atención ininterrumpida. Forzar más de 90 minutos de análisis continuo agota drásticamente las reservas de glucosa en la corteza prefrontal, provocando fatiga mental. Las pausas activas (sin pantallas) reactivan la 'Red Neuronal por Defecto', permitiendo procesar información compleja de fondo.</p>
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/31725384/" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-blue-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente: PubMed NIH - Fatigue Study</a>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-teal-700 dark:text-teal-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-clock"></i> 3. Ciclo Circadiano</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300 leading-relaxed italic">"Hacer lo correcto en el momento biológico correcto".</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed"><b>Mañana:</b> Pico natural de cortisol. Es el estado biológico ideal para la lógica, toma de decisiones difíciles y tareas de alta demanda analítica. <br><b>Tarde:</b> Pico de temperatura corporal, el momento óptimo para la coordinación física, tareas mecánicas o dejar fluir la creatividad. <br><b>Noche:</b> Pico de melatonina, ideal para la lectura relajada y la consolidación de la memoria antes de dormir.</p>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6200866/" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-teal-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente: NIH PMC - Biological Rhythms</a>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-emerald-700 dark:text-emerald-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-running"></i> 4. Actividad Física Metabólica</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Recomendación: 150-300 min semanales.</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">El ejercicio cardiovascular y de fuerza estimula la liberación del factor neurotrófico derivado del cerebro (BDNF). Este actúa literalmente como un 'fertilizante' biológico, promoviendo la creación de nuevas neuronas (neurogénesis) y protegiendo el cerebro contra el estrés oxidativo generado por el trabajo tecnológico sedentario.</p>
+                    <a href="https://www.who.int/es/news-room/fact-sheets/detail/physical-activity" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-emerald-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente: OMS (Organización Mundial de la Salud)</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DIAGNÓSTICO CLÍNICO -->
+    <!-- MODAL DIAGNÓSTICO CLÍNICO (ACTUALIZADO Y COMPLETO) -->
     <div id="modal-analisis" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
             <div class="bg-purple-600 dark:bg-purple-800 px-6 py-4 sm:px-8 sm:py-6 text-white flex justify-between items-center">
-                <h3 class="text-lg sm:text-xl font-black flex items-center gap-2 uppercase italic tracking-tighter">Escáner Bio-Salud</h3>
+                <h3 class="text-lg sm:text-xl font-black flex items-center gap-2 uppercase italic tracking-tighter">Escáner Bio-Salud y Rendimiento</h3>
                 <button onclick="cerrarModal('modal-analisis')"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
             <div id="reporte-contenido" class="p-5 sm:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10">
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL CIERRE SEMANAL -->
+    <div id="modal-cierre-semanal" class="fixed inset-0 z-[4800] modal-overlay hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 max-w-md w-full rounded-[2.5rem] p-8 text-center shadow-2xl border border-slate-700">
+            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-inner"><i class="fas fa-tasks text-2xl"></i></div>
+            <h2 class="text-2xl font-black mb-4 uppercase text-slate-900 dark:text-white tracking-tighter">Cerrar Semana</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 font-semibold">Tus estadísticas se guardarán en el historial. ¿Qué deseas limpiar?</p>
+            <div class="space-y-3 mb-8 text-left">
+                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors text-slate-800 dark:text-white">
+                    <input type="checkbox" id="chk-clear-text" checked class="w-5 h-5 accent-indigo-600">
+                    <span class="font-bold text-sm">Borrar textos</span>
+                </label>
+                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors text-slate-800 dark:text-white">
+                    <input type="checkbox" id="chk-clear-colors" class="w-5 h-5 accent-indigo-600">
+                    <span class="font-bold text-sm">Borrar colores de fondo</span>
+                </label>
+                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors text-slate-800 dark:text-white">
+                    <input type="checkbox" id="chk-clear-done" checked class="w-5 h-5 accent-indigo-600">
+                    <span class="font-bold text-sm">Reiniciar tareas completadas (XP)</span>
+                </label>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="cerrarModal('modal-cierre-semanal')" class="flex-1 bg-slate-100 dark:bg-slate-700 dark:text-white py-4 rounded-2xl font-black uppercase text-[10px]">Cancelar</button>
+                <button onclick="ejecutarCierreSemanal()" class="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-[10px] shadow-lg active:scale-95">Archivar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL HISTORIAL -->
+    <div id="modal-historial" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
+            <div class="bg-blue-600 dark:bg-blue-800 px-8 py-6 text-white flex justify-between items-center">
+                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Historial de Semanas</h3>
+                <button onclick="cerrarModal('modal-historial')"><i class="fas fa-times-circle text-2xl"></i></button>
+            </div>
+            <div id="historial-contenido" class="p-6 md:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-sm"></div>
         </div>
     </div>
 
@@ -462,10 +520,10 @@
         <div id="timer-display" class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter my-2 tabular-nums">25:00</div>
         
         <div class="w-full flex justify-around mb-2">
-             <button onclick="playFocusSound('rain')" class="text-blue-400 hover:scale-110 bg-blue-50 dark:bg-blue-900/30 p-3 rounded-full"><i class="fas fa-cloud-showers-heavy"></i></button>
-             <button onclick="playFocusSound('forest')" class="text-emerald-400 hover:scale-110 bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-full"><i class="fas fa-tree"></i></button>
-             <button onclick="playFocusSound('cafe')" class="text-yellow-600 hover:scale-110 bg-yellow-50 dark:bg-yellow-900/30 p-3 rounded-full"><i class="fas fa-coffee"></i></button>
-             <button onclick="stopFocusSound()" class="text-slate-400 hover:text-red-400 bg-slate-100 dark:bg-slate-700 p-3 rounded-full"><i class="fas fa-volume-mute"></i></button>
+             <button onclick="playFocusSound('rain')" title="Lluvia" class="text-blue-400 hover:scale-110 transition-transform bg-blue-50 dark:bg-blue-900/30 p-3 rounded-full"><i class="fas fa-cloud-showers-heavy"></i></button>
+             <button onclick="playFocusSound('forest')" title="Bosque" class="text-emerald-400 hover:scale-110 transition-transform bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-full"><i class="fas fa-tree"></i></button>
+             <button onclick="playFocusSound('cafe')" title="Cafetería" class="text-yellow-600 hover:scale-110 transition-transform bg-yellow-50 dark:bg-yellow-900/30 p-3 rounded-full"><i class="fas fa-coffee"></i></button>
+             <button onclick="stopFocusSound()" title="Silencio" class="text-slate-400 hover:text-red-400 transition-transform bg-slate-100 dark:bg-slate-700 p-3 rounded-full"><i class="fas fa-volume-mute"></i></button>
         </div>
 
         <div class="flex gap-2 w-full">
@@ -517,8 +575,59 @@
         let colorActivo = ''; 
         let herramientaActiva = '';
         let isDragging = false; 
+        
+        // ESTADO DE BLOQUEO (NUEVO)
+        let isScheduleLocked = false;
 
-        // --- INICIALIZACIÓN ---
+        // --- CORE MAIN FUNCIONES RESTAURADAS ---
+        function actualizarNombreUI() { 
+            const el = document.getElementById('display-user-name'); 
+            if(el) el.innerText = userName; 
+        }
+        
+        function updateLiveClock() {
+            const n = new Date();
+            const clk = document.getElementById('live-clock'); 
+            if(clk) clk.innerText = n.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
+            const dte = document.getElementById('live-date'); 
+            if(dte) dte.innerText = n.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+        
+        function highlightLiveCell() {
+            document.querySelectorAll('.live-cell').forEach(el => el.classList.remove('live-cell'));
+            const n = new Date(); const diaIndex = (n.getDay() + 6) % 7; 
+            const hourStr = `${n.getHours().toString().padStart(2, '0')}:${n.getMinutes() >= 30 ? '30' : '00'}`;
+            const cell = document.querySelector(`.editable-content[data-dia="${diaIndex}"][data-hora="${hourStr}"]`);
+            if (cell) cell.parentElement.classList.add('live-cell');
+        }
+
+        function renderizarPaleta() {
+            const p = document.getElementById('color-palette'); 
+            if(!p) return;
+            p.innerHTML = '';
+            categorias.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border-2 transition-all ${cat.bgClass} ${cat.id === herramientaActiva ? cat.borderClass + ' scale-110 shadow-md' : 'border-transparent'}`;
+                
+                let circleColor = ''; let iconHtml = '';
+                if(cat.id === 'borrar' || cat.id === 'neutral') circleColor = 'bg-white border border-slate-300';
+                else if(cat.id === 'sync') { circleColor = 'bg-indigo-500 flex items-center justify-center'; iconHtml = '<i class="fas fa-link text-[6px] text-white"></i>'; }
+                else if(cat.id === 'select') { circleColor = 'bg-indigo-100 border border-indigo-400 flex items-center justify-center'; iconHtml = '<i class="fas fa-mouse-pointer text-[6px] text-indigo-600"></i>'; }
+                else circleColor = cat.bgClass.replace('100','400');
+                
+                btn.innerHTML = `<div class="w-2.5 h-2.5 rounded-full ${circleColor} flex items-center justify-center">${iconHtml}</div>${cat.nombre}`;
+                
+                btn.onclick = () => { 
+                    colorActivo = cat.bgClass; herramientaActiva = cat.id; renderizarPaleta(); 
+                    if(cat.id === 'sync') mostrarToast("Vincular: Arrastra para agrupar días.", "blue");
+                    else if(cat.id === 'select') mostrarToast("Seleccionar: Arrastra para marcar casillas.", "blue");
+                    else { document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active')); cancelarSeleccion(); }
+                };
+                p.appendChild(btn);
+            });
+        }
+
+        // --- INICIALIZACIÓN PRINCIPAL ---
         document.addEventListener('DOMContentLoaded', () => {
             inicializarModoOscuro();
             cargarConfiguracionAjustes();
@@ -545,7 +654,7 @@
             updateLiveClock(); highlightLiveCell();
 
             const stopDrag = () => { 
-                if(isDragging) { 
+                if(isDragging && !isScheduleLocked) { 
                     isDragging = false; 
                     guardarDatosEnMemoria(); 
                     calcularEstadisticas(); 
@@ -563,47 +672,6 @@
                 }
             });
         });
-
-        // --- CORE MAIN FUNCIONES ---
-        function actualizarNombreUI() { const el = document.getElementById('display-user-name'); if(el) el.innerText = userName; }
-        
-        function updateLiveClock() {
-            const n = new Date();
-            const clk = document.getElementById('live-clock'); if(clk) clk.innerText = n.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
-            const dte = document.getElementById('live-date'); if(dte) dte.innerText = n.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-        }
-        
-        function highlightLiveCell() {
-            document.querySelectorAll('.live-cell').forEach(el => el.classList.remove('live-cell'));
-            const n = new Date(); const diaIndex = (n.getDay() + 6) % 7; 
-            const hourStr = `${n.getHours().toString().padStart(2, '0')}:${n.getMinutes() >= 30 ? '30' : '00'}`;
-            const cell = document.querySelector(`.editable-content[data-dia="${diaIndex}"][data-hora="${hourStr}"]`);
-            if (cell) cell.parentElement.classList.add('live-cell');
-        }
-
-        function renderizarPaleta() {
-            const p = document.getElementById('color-palette'); p.innerHTML = '';
-            categorias.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border-2 transition-all ${cat.bgClass} ${cat.id === herramientaActiva ? cat.borderClass + ' scale-110 shadow-md' : 'border-transparent'}`;
-                
-                let circleColor = ''; let iconHtml = '';
-                if(cat.id === 'borrar' || cat.id === 'neutral') circleColor = 'bg-white border border-slate-300';
-                else if(cat.id === 'sync') { circleColor = 'bg-indigo-500 flex items-center justify-center'; iconHtml = '<i class="fas fa-link text-[6px] text-white"></i>'; }
-                else if(cat.id === 'select') { circleColor = 'bg-indigo-100 border border-indigo-400 flex items-center justify-center'; iconHtml = '<i class="fas fa-mouse-pointer text-[6px] text-indigo-600"></i>'; }
-                else circleColor = cat.bgClass.replace('100','400');
-                
-                btn.innerHTML = `<div class="w-2.5 h-2.5 rounded-full ${circleColor} flex items-center justify-center">${iconHtml}</div>${cat.nombre}`;
-                
-                btn.onclick = () => { 
-                    colorActivo = cat.bgClass; herramientaActiva = cat.id; renderizarPaleta(); 
-                    if(cat.id === 'sync') mostrarToast("Vincular: Arrastra para agrupar días.", "blue");
-                    else if(cat.id === 'select') mostrarToast("Seleccionar: Arrastra para marcar casillas.", "blue");
-                    else { document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active')); cancelarSeleccion(); }
-                };
-                p.appendChild(btn);
-            });
-        }
 
         // --- UTILIDADES ---
         function cerrarModal(id) { 
@@ -735,26 +803,42 @@
                 if("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(
                         pos => { fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude); },
-                        async () => { 
-                            try {
-                                const ipRes = await fetch('https://ipapi.co/json/');
-                                const ipData = await ipRes.json();
-                                if(ipData.latitude && ipData.longitude) fetchWeatherByCoords(ipData.latitude, ipData.longitude);
-                                else fetchWeatherByCoords(fallbackLat, fallbackLon); 
-                            } catch(e) { fetchWeatherByCoords(fallbackLat, fallbackLon); }
-                        }, { timeout: 3000 }
+                        async () => { fetchWeatherByCoords(fallbackLat, fallbackLon); }, { timeout: 3000 }
                     );
                 } else fetchWeatherByCoords(fallbackLat, fallbackLon);
             }
         }
 
-        // --- ZEN MODE ---
+        // --- MODOS: ZEN & LOCK (NUEVO) ---
         function toggleZenMode() {
             document.body.classList.toggle('zen-mode');
             if(document.body.classList.contains('zen-mode')) {
                 mostrarToast("Modo Zen Activado. Sin distracciones.");
                 const w = document.getElementById('timer-widget');
                 if(w && w.classList.contains('hidden')) toggleTimer();
+            }
+        }
+
+        function toggleLock() {
+            isScheduleLocked = !isScheduleLocked;
+            const btn = document.getElementById('btn-lock');
+            const cells = document.querySelectorAll('.editable-content');
+            
+            if(isScheduleLocked) {
+                if(btn) {
+                    btn.innerHTML = '<i class="fas fa-lock text-red-500"></i> Desbloquear';
+                    btn.classList.add('bg-red-50', 'dark:bg-red-900/20', 'text-red-600', 'border-red-200', 'dark:border-red-800');
+                }
+                cells.forEach(c => c.contentEditable = false);
+                cancelarSeleccion();
+                mostrarToast("Horario bloqueado. Navegación segura.", "blue");
+            } else {
+                if(btn) {
+                    btn.innerHTML = '<i class="fas fa-lock"></i> Bloquear';
+                    btn.classList.remove('bg-red-50', 'dark:bg-red-900/20', 'text-red-600', 'border-red-200', 'dark:border-red-800');
+                }
+                cells.forEach(c => c.contentEditable = true);
+                mostrarToast("Horario desbloqueado. Modo de edición.", "green");
             }
         }
 
@@ -773,6 +857,7 @@
         }
 
         function borrarSeleccion() {
+            if(isScheduleLocked) return;
             const seleccionadas = document.querySelectorAll('.selected-cell');
             seleccionadas.forEach(divEdit => {
                 divEdit.innerText = '';
@@ -912,32 +997,55 @@
             if(el) { userName = el.innerText.trim() || "Usuario"; localStorage.setItem('kairos_userName', userName); }
         }
         
+        // --- CIERRE Y GUARDADO DE HISTORIAL (CORREGIDO) ---
         function archivarSemana() { const m = document.getElementById('modal-cierre-semanal'); if(m) m.classList.remove('hidden'); }
+        
         function ejecutarCierreSemanal() {
-            let contadores = {}; categorias.forEach(cat => { if(!cat.isSpecial) contadores[cat.bgClass] = 0; });
-            document.querySelectorAll('.editable-content').forEach(c => { let bg = null; c.parentElement.classList.forEach(cls => { if(contadores[cls]!==undefined) bg = cls; }); if(bg) contadores[bg] += 0.5; });
-            const archive = JSON.parse(localStorage.getItem('kairos_archive') || '[]'); 
-            const ttl = document.getElementById('app-title');
-            archive.push({ fecha: new Date().toLocaleDateString(), titulo: ttl ? ttl.innerText : 'Horario', stats: contadores });
-            localStorage.setItem('kairos_archive', JSON.stringify(archive));
-            
-            const chkText = document.getElementById('chk-clear-text');
-            const chkColor = document.getElementById('chk-clear-colors');
-            const chkDone = document.getElementById('chk-clear-done');
-            
-            const clearText = chkText ? chkText.checked : true; 
-            const clearColors = chkColor ? chkColor.checked : false; 
-            const clearDone = chkDone ? chkDone.checked : true;
-            
-            document.querySelectorAll('.editable-content').forEach(c => {
-                if(clearText) c.innerText = '';
-                if(clearDone) c.classList.remove('task-completed');
-                if(clearColors) { c.parentElement.classList.forEach(cls => { if(cls.startsWith('bg-') && !cls.includes('current')) c.parentElement.classList.remove(cls); }); }
-            });
-            guardarDatosEnMemoria(); calcularEstadisticas(); cerrarModal('modal-cierre-semanal'); mostrarToast("Semana guardada.");
+            try {
+                let contadores = {}; 
+                categorias.forEach(cat => { if(!cat.isSpecial) contadores[cat.bgClass] = 0; });
+                
+                document.querySelectorAll('.editable-content').forEach(c => { 
+                    let bg = null; 
+                    c.parentElement.classList.forEach(cls => { if(contadores[cls] !== undefined) bg = cls; }); 
+                    if(bg) contadores[bg] += 0.5; 
+                });
+                
+                let archive = [];
+                try {
+                    const saved = localStorage.getItem('kairos_archive');
+                    if(saved) {
+                        archive = JSON.parse(saved);
+                        if(!Array.isArray(archive)) archive = [];
+                    }
+                } catch(e) { archive = []; }
+                
+                const ttl = document.getElementById('app-title');
+                archive.push({ fecha: new Date().toLocaleDateString(), titulo: ttl ? ttl.innerText : 'Horario', stats: contadores });
+                localStorage.setItem('kairos_archive', JSON.stringify(archive));
+                
+                const chkText = document.getElementById('chk-clear-text');
+                const chkColor = document.getElementById('chk-clear-colors');
+                const chkDone = document.getElementById('chk-clear-done');
+                
+                const clearText = chkText ? chkText.checked : true; 
+                const clearColors = chkColor ? chkColor.checked : false; 
+                const clearDone = chkDone ? chkDone.checked : true;
+                
+                document.querySelectorAll('.editable-content').forEach(c => {
+                    if(clearText) c.innerText = '';
+                    if(clearDone) c.classList.remove('task-completed');
+                    if(clearColors) { c.parentElement.classList.forEach(cls => { if(cls.startsWith('bg-') && !cls.includes('current')) c.parentElement.classList.remove(cls); }); }
+                });
+                
+                guardarDatosEnMemoria(); calcularEstadisticas(); cerrarModal('modal-cierre-semanal'); mostrarToast("Semana guardada con éxito.");
+            } catch(e) {
+                console.error(e);
+                mostrarToast("Error al guardar historial.", "red");
+            }
         }
 
-        // --- SALUD / DIAGNÓSTICO ---
+        // --- SALUD / DIAGNÓSTICO DETALLADO ---
         function checkHealthStreak() {
             let horasPorId = { salud: 0, trabajo: 0, proyectos: 0, estudio: 0, ocio: 0 };
             let mapBgToId = {}; categorias.forEach(cat => mapBgToId[cat.bgClass] = cat.id);
@@ -963,21 +1071,57 @@
             });
             const cargaCognitiva = horasPorId.trabajo + horasPorId.proyectos + horasPorId.estudio; const horasOcio = horasPorId.ocio; const horasSalud = horasPorId.salud;
             let html = "";
+            
             html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break"><h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-brain text-indigo-500"></i> Carga Analítica y Cognitiva</h4><p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Carga detectada: ${cargaCognitiva} horas</p>`;
-            if (cargaCognitiva > 55) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ RIESGO CRÍTICO DE BURNOUT.</b></p></div>`; } 
-            else if (cargaCognitiva >= 45) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ ESTADO DE ALTO RENDIMIENTO.</b></p></div>`; } 
-            else if (cargaCognitiva >= 20) { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ RITMO SALUDABLE.</b></p></div>`; }
-            else { html += `<div class="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-2xl border border-blue-200 dark:border-blue-800/50"><p class="text-sm font-semibold"><b>ℹ️ CARGA LIGERA.</b></p></div>`; }
-            html += `</div>`;
+            if (cargaCognitiva > 55) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ RIESGO CRÍTICO DE BURNOUT:</b> Estás superando el umbral de las 55 horas de alta demanda cognitiva. Los niveles de cortisol crónicamente elevados pueden dañar el hipocampo, reduciendo tu memoria y capacidad de aprendizaje a largo plazo. Es imperativo reducir la carga de trabajo ininterrumpido.</p></div>`; } 
+            else if (cargaCognitiva >= 45) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ ESTADO DE ALTO RENDIMIENTO:</b> Estás en un ritmo de trabajo de élite, pero requiere un sueño estricto de 8 a 9 horas innegociables para no entrar en deuda cognitiva.</p></div>`; } 
+            else if (cargaCognitiva >= 20) { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ RITMO SALUDABLE:</b> Excelente. Tu cerebro tiene tiempo suficiente para entrar en "Red Neuronal por Defecto", lo cual es biológicamente esencial para la creatividad y la resolución de problemas complejos.</p></div>`; }
+            else { html += `<div class="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-2xl border border-blue-200 dark:border-blue-800/50"><p class="text-sm font-semibold"><b>ℹ️ CARGA LIGERA:</b> Tienes mucha capacidad mental libre. Buen momento para introducir nuevos proyectos desafiantes o cursos intensivos.</p></div>`; }
+            html += `<a href="https://www.medicalnewstoday.com/articles/cognitive-fatigue" target="_blank" class="text-[10px] uppercase font-black tracking-widest text-indigo-500 underline mt-4 inline-block"><i class="fas fa-link"></i> Ciencia del Foco (Medical News)</a></div>`;
+
             html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break"><h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-couch text-yellow-500"></i> Recuperación Parasimpática</h4><p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Ocio: ${horasOcio} horas</p>`;
-            if (horasOcio < 12) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ DÉFICIT DE RECUPERACIÓN.</b></p></div>`; } 
-            else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ SISTEMA BALANCEADO.</b></p></div>`; }
+            if (horasOcio < 12) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ DÉFICIT DE RECUPERACIÓN:</b> Tu sistema no tiene tiempo para desactivar el estrés. Esto mantiene tu sistema nervioso autónomo en modo "alerta", reduciendo drásticamente la calidad del sueño profundo.</p></div>`; } 
+            else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ SISTEMA BALANCEADO:</b> Le estás dando a tu cuerpo el tiempo biológico exacto para reparar tejidos celulares y reducir la inflamación sistémica.</p></div>`; }
             html += `</div>`;
+
             html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break"><h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-running text-emerald-500"></i> Salud Metabólica</h4><p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Salud/Movimiento: ${horasSalud} horas</p>`;
-            if (horasSalud < 3.5) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ RIESGO DE SEDENTARISMO.</b></p></div>`; } 
-            else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ ESCUDO METABÓLICO.</b></p></div>`; }
+            if (horasSalud < 3.5) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ RIESGO DE SEDENTARISMO:</b> El flujo sanguíneo cerebral disminuye tras largos periodos sentado. Agrega pequeños bloques de 15 min de movimiento intenso para "oxigenar" las neuronas.</p></div>`; } 
+            else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ ESCUDO METABÓLICO:</b> Mantienes activa la producción natural de BDNF, protegiendo eficientemente tu cerebro contra el deterioro del estrés y la inactividad física.</p></div>`; }
             html += `</div>`;
+            
             return html;
+        }
+
+        // --- HISTORIAL UI ---
+        function abrirModalHistorial() {
+            const container = document.getElementById('historial-contenido');
+            let archive = [];
+            try {
+                const saved = localStorage.getItem('kairos_archive');
+                if(saved) archive = JSON.parse(saved);
+                if(!Array.isArray(archive)) archive = [];
+            } catch(e) { archive = []; }
+            
+            container.innerHTML = '';
+            if (archive.length === 0) { container.innerHTML = '<div class="text-center py-10 opacity-50 font-bold">Aún no has archivado ninguna semana. Usa el botón "Cerrar Sem." cuando termines tu planificación semanal.</div>'; } 
+            else {
+                archive.reverse().forEach((entry, idx) => {
+                    let statsHtml = '';
+                    categorias.forEach(cat => {
+                        if(cat.isSpecial) return; const h = entry.stats[cat.bgClass] || 0;
+                        if(h > 0) statsHtml += `<div class="flex items-center justify-between text-[10px] font-black uppercase"><span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full ${cat.bgClass.replace('100','400')}"></div> ${cat.nombre}</span><span>${h}H</span></div>`;
+                    });
+                    container.innerHTML += `<div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 mb-3 shadow-sm"><div class="flex justify-between items-start mb-3"><div><p class="text-[9px] font-black text-indigo-500 uppercase">${entry.fecha}</p><h4 class="font-black text-slate-800 dark:text-white uppercase tracking-tight">${entry.titulo}</h4></div><button onclick="borrarEntradaHistorial(${archive.length - 1 - idx})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button></div><div class="grid grid-cols-2 gap-x-6 gap-y-1 pt-2 border-t border-slate-50 dark:border-slate-700">${statsHtml}</div></div>`;
+                });
+            }
+            document.getElementById('modal-historial').classList.remove('hidden');
+        }
+
+        function borrarEntradaHistorial(idx) {
+            if(!confirm("¿Eliminar este registro permanente?")) return;
+            let archive = [];
+            try { archive = JSON.parse(localStorage.getItem('kairos_archive')); } catch(e) { return; }
+            archive.splice(idx, 1); localStorage.setItem('kairos_archive', JSON.stringify(archive)); abrirModalHistorial();
         }
 
         // --- NAVEGACIÓN TECLADO (EXCEL-LIKE) ---
@@ -1015,9 +1159,10 @@
                         const edit = document.createElement('div');
                         
                         edit.className = `editable-content w-full h-full min-h-[35px] p-2 rounded-lg outline-none ${fontSize} font-bold text-slate-800 dark:text-white transition-all`;
-                        edit.contentEditable = true; edit.dataset.dia = di; edit.dataset.hora = `${h.toString().padStart(2,'0')}:${m}`;
+                        edit.contentEditable = !isScheduleLocked; edit.dataset.dia = di; edit.dataset.hora = `${h.toString().padStart(2,'0')}:${m}`;
                         
                         edit.oninput = () => {
+                            if(isScheduleLocked) return;
                             if(edit.innerText.includes('/pomodoro')) {
                                 edit.innerText = edit.innerText.replace('/pomodoro', '').trim();
                                 const w = document.getElementById('timer-widget');
@@ -1030,6 +1175,7 @@
                         };
 
                         edit.addEventListener('keydown', (e) => {
+                            if(isScheduleLocked) return;
                             const currentTr = td.parentElement;
                             const currentTdIdx = Array.from(currentTr.children).indexOf(td);
                             
@@ -1059,6 +1205,7 @@
                         });
                         
                         edit.onmousedown = (e) => { 
+                            if(isScheduleLocked) return;
                             if (herramientaActiva === 'select') {
                                 isDragging = true; edit.classList.toggle('selected-cell'); actualizarBarraSeleccion(); e.preventDefault(); edit.focus();
                             }
@@ -1072,7 +1219,7 @@
                         };
                         
                         edit.onmouseenter = () => { 
-                            if(isDragging) {
+                            if(isDragging && !isScheduleLocked) {
                                 if(herramientaActiva === 'select') { edit.classList.add('selected-cell'); actualizarBarraSeleccion(); }
                                 else if(herramientaActiva === 'sync') { edit.classList.add('sync-active'); } 
                                 else if(colorActivo !== 'bg-transparent' || herramientaActiva === 'borrar') { paintCell(td); }
@@ -1080,13 +1227,14 @@
                         };
 
                         edit.addEventListener('touchstart', (e) => {
+                            if(isScheduleLocked) return;
                             if (herramientaActiva === 'select') { edit.classList.toggle('selected-cell'); actualizarBarraSeleccion(); e.preventDefault(); } 
                             else if (herramientaActiva === 'sync') { edit.classList.toggle('sync-active'); e.preventDefault(); } 
                             else if (colorActivo !== 'bg-transparent' || herramientaActiva === 'borrar') { paintCell(td); }
                         }, {passive: false});
                         
-                        edit.onblur = () => { guardarDatosEnMemoria(); calcularEstadisticas(); };
-                        edit.ondblclick = () => { if(edit.innerText.trim()){ edit.classList.toggle('task-completed'); if(edit.classList.contains('task-completed')) addXP(10); guardarDatosEnMemoria(); } };
+                        edit.onblur = () => { if(!isScheduleLocked) { guardarDatosEnMemoria(); calcularEstadisticas(); } };
+                        edit.ondblclick = () => { if(!isScheduleLocked && edit.innerText.trim()){ edit.classList.toggle('task-completed'); if(edit.classList.contains('task-completed')) addXP(10); guardarDatosEnMemoria(); } };
                         td.appendChild(edit); tr.appendChild(td);
                     });
                     body.appendChild(tr);
@@ -1163,7 +1311,6 @@
 
         function inicializarModoOscuro() { if(localStorage.getItem('theme')==='dark') document.documentElement.classList.add('dark'); }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light'); }
-        
         function cargarConfiguracionAjustes() {
             const c = localStorage.getItem('horarioCategorias'); 
             if(c) {
@@ -1181,12 +1328,12 @@
             userCity = localStorage.getItem('kairos_city') || '';
             fontSize = localStorage.getItem('kairos_fontSize') || 'text-[10px] md:text-xs';
         }
-        
         function cargarTitulo() { const el = document.getElementById('app-title'); if(el && profiles[currentProfile]) { el.innerText = profiles[currentProfile]; } }
         function guardarTitulo() { const el = document.getElementById('app-title'); if(el) { const newTitle = el.innerText.trim(); if(newTitle) { profiles[currentProfile] = newTitle; localStorage.setItem('kairos_profiles', JSON.stringify(profiles)); initProfiles(); } } }
         function marcarDiaActual() { window.currentDayIndex = (new Date().getDay() + 6) % 7; }
 
         function rellenarDescansos() {
+            if(isScheduleLocked) return;
             const cat = categorias.find(x => x.id==='ocio'); let n = 0;
             document.querySelectorAll('.editable-content').forEach(c => {
                 if(!c.innerText && !Array.from(c.parentElement.classList).some(cl => cl.startsWith('bg-') && !cl.includes('current'))){
