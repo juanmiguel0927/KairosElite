@@ -37,6 +37,16 @@
         
         .task-completed { text-decoration: line-through; opacity: 0.4; filter: grayscale(80%); font-style: italic; }
         
+        /* NUEVO: Estilo para celdas vinculadas (Sync Mode) */
+        .sync-active {
+            outline: 2px dashed #6366F1 !important;
+            outline-offset: -2px;
+            background-color: rgba(99, 102, 241, 0.15) !important;
+        }
+        .dark .sync-active {
+            background-color: rgba(99, 102, 241, 0.3) !important;
+        }
+        
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; touch-action: pan-x; }
         
@@ -93,7 +103,6 @@
 </head>
 <body class="bg-slate-50 text-slate-800 pb-20">
 
-    <!-- ZEN EXIT BUTTON -->
     <button id="zen-exit-btn" onclick="toggleZenMode()" class="fixed top-4 left-4 z-[9000] bg-slate-900 text-white px-4 py-2 rounded-full font-black text-xs shadow-xl border border-slate-700 items-center gap-2 hover:bg-slate-800 transition-all">
         <i class="fas fa-arrow-left"></i> Salir del Modo Zen
     </button>
@@ -110,20 +119,20 @@
             </div>
             <div id="step-1" class="step-content hidden text-left">
                 <h3 class="text-indigo-500 font-black text-[10px] uppercase mb-1">Tutorial 1/4</h3>
-                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Pintar y Gamificación</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Selecciona un <b>Pincel</b> arriba. Mantén presionado y arrastra sobre la tabla para pintar. Haz <b>Doble Clic</b> sobre un texto para tacharlo y ganar XP.</p>
+                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Pintar y Vincular</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Selecciona un <b>Pincel</b> y arrastra para pintar. Si usas la herramienta <b>Vincular</b> (🔗), podrás escribir en varios días al mismo tiempo.</p>
                 <button onclick="goToStep(2)" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs active:scale-95">Entendido</button>
             </div>
             <div id="step-2" class="step-content hidden text-left">
                 <h3 class="text-indigo-500 font-black text-[10px] uppercase mb-1">Tutorial 2/4</h3>
-                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Modo Zen & Comandos</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Escribe <b>/pomodoro</b> en cualquier celda para iniciar el foco automático. Usa el botón de Loto para entrar en Modo Zen (sin distracciones).</p>
+                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Seguimiento en Vivo</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Resaltamos con un <b>Brillo Azul</b> la hora actual para que nunca pierdas el foco de tu misión presente.</p>
                 <button onclick="goToStep(3)" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs active:scale-95">Siguiente</button>
             </div>
             <div id="step-3" class="step-content hidden text-left">
                 <h3 class="text-indigo-500 font-black text-[10px] uppercase mb-1">Tutorial 3/4</h3>
-                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Multi-Horarios</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Puedes crear varios perfiles (Ej. Vacaciones, Exámenes) usando el menú desplegable junto al título. ¡Tu horario principal estará seguro!</p>
+                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Modo Zen & Multi-Horario</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Escribe <b>/pomodoro</b> en cualquier celda para activar el temporizador. Puedes crear varios perfiles (Ej. Vacaciones) en el menú superior.</p>
                 <button onclick="goToStep(4)" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs active:scale-95">Continuar</button>
             </div>
             <div id="step-4" class="step-content hidden">
@@ -141,11 +150,10 @@
             
             <div class="app-branding-container">
                 <div class="app-badge">
-                    <i class="fas fa-bolt text-yellow-400"></i>
+                    <i class="fas fa-bolt text-yellow-400 animate-pulse"></i>
                     KAIRÓS ELITE PRO
                 </div>
                 
-                <!-- Weather Widget & XP -->
                 <div class="flex items-center gap-4">
                     <div class="flex flex-col items-end text-right hidden sm:flex">
                         <span class="text-[9px] font-black uppercase tracking-widest text-indigo-300">NIVEL <span id="user-level-display" class="text-yellow-400 text-xs">1</span></span>
@@ -160,11 +168,8 @@
 
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div class="flex items-start gap-4 w-full md:w-auto">
-                    <!-- AVATAR EDITABLE (NUEVO) -->
                     <div onclick="abrirModalAvatar()" class="w-12 h-12 md:w-14 md:h-14 bg-white/10 rounded-2xl flex shrink-0 items-center justify-center border border-white/20 backdrop-blur-md shadow-inner mt-1 cursor-pointer hover:bg-white/20 transition-all overflow-hidden relative group" title="Cambiar Avatar">
-                        <div id="user-avatar-display" class="w-full h-full flex items-center justify-center">
-                            <!-- Se llena por JS -->
-                        </div>
+                        <div id="user-avatar-display" class="w-full h-full flex items-center justify-center"></div>
                         <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <i class="fas fa-camera text-white text-sm"></i>
                         </div>
@@ -176,7 +181,6 @@
                         </p>
                         <h1 id="app-title" contenteditable="true" data-placeholder="Nombre del Plan..." class="text-xl md:text-3xl font-black tracking-tight truncate w-full mb-2" onblur="guardarTitulo()">Mi Horario Semanal</h1>
                         
-                        <!-- Multi Profile Selector -->
                         <div class="relative inline-block w-48">
                             <select id="profile-selector" onchange="switchProfile(this.value)" class="appearance-none w-full bg-indigo-900/40 border border-indigo-400/30 text-white text-[10px] font-black uppercase tracking-widest rounded-lg px-3 py-1.5 outline-none cursor-pointer hover:bg-indigo-800/60 transition-colors">
                             </select>
@@ -224,14 +228,15 @@
 
     <!-- ÁREA PRINCIPAL -->
     <div id="app-container" class="max-w-7xl mx-auto px-4 md:px-8">
-        <div class="toolbar-section bg-white dark:bg-slate-800 p-3 md:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-5 flex flex-col md:flex-row gap-4 items-center justify-between">
+        
+        <div class="toolbar-section bg-white dark:bg-slate-800 p-3 md:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-2 flex flex-col md:flex-row gap-4 items-center justify-between">
             <div class="flex flex-wrap gap-2 items-center w-full md:w-auto">
                 <span class="font-black text-[10px] text-slate-400 uppercase tracking-widest mr-1">Pinceles:</span>
                 <div id="color-palette" class="flex flex-wrap gap-1.5"></div>
             </div>
             <div class="flex gap-2 w-full md:w-auto shrink-0">
                 <button onclick="gestionarPerfiles()" class="flex-1 md:flex-none px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-indigo-200 dark:border-indigo-800 transition-all flex items-center justify-center gap-2">
-                    <i class="fas fa-folder-plus"></i> Nuevo Perfil
+                    <i class="fas fa-users-cog"></i> Perfiles & Backup
                 </button>
                 <button onclick="rellenarDescansos()" class="flex-1 md:flex-none px-4 py-2.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-yellow-200 dark:border-yellow-800 transition-all flex items-center justify-center gap-2">
                     <i class="fas fa-bolt"></i> Auto-Ocio
@@ -243,6 +248,10 @@
                     <i class="fas fa-file-pdf"></i> Exportar
                 </button>
             </div>
+        </div>
+        
+        <div class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2 px-2">
+            <i class="fas fa-info-circle text-indigo-400 shrink-0"></i> <span>Usa la herramienta <b>Vincular</b> (🔗) para seleccionar varios días y escribir en todos a la vez.</span>
         </div>
 
         <div id="contenedor-horario" class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
@@ -267,7 +276,9 @@
         </footer>
     </div>
 
-    <!-- MODAL AVATAR (NUEVO) -->
+    <!-- MODALES VARIOS -->
+
+    <!-- MODAL AVATAR -->
     <div id="modal-avatar" class="fixed inset-0 z-[6000] modal-overlay hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 max-w-sm w-full rounded-[2rem] p-6 text-center shadow-2xl border border-slate-700 mobile-modal-anim">
             <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
@@ -275,21 +286,139 @@
                 <button onclick="cerrarModal('modal-avatar')"><i class="fas fa-times-circle text-slate-300 text-2xl hover:text-red-500 transition-colors"></i></button>
             </div>
             
-            <p class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 font-black">1. Sube tu propia foto</p>
-            
-            <label class="block w-full bg-indigo-50 dark:bg-indigo-900/20 border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl p-4 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors mb-6">
-                <i class="fas fa-camera-retro text-indigo-500 text-2xl mb-2"></i>
-                <span class="block text-xs font-bold text-indigo-700 dark:text-indigo-400">Seleccionar Imagen</span>
-                <input type="file" id="avatar-upload" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
-            </label>
+            <div class="flex gap-3 mb-6">
+                <label class="flex-1 bg-indigo-50 dark:bg-indigo-900/20 border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl p-3 cursor-pointer hover:bg-indigo-100 transition-colors flex flex-col items-center justify-center">
+                    <i class="fas fa-image text-indigo-500 text-2xl mb-2"></i>
+                    <span class="block text-[10px] font-bold text-indigo-700 dark:text-indigo-400 uppercase">Subir Foto</span>
+                    <input type="file" id="avatar-upload" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
+                </label>
+                <label class="flex-1 bg-indigo-50 dark:bg-indigo-900/20 border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl p-3 cursor-pointer hover:bg-indigo-100 transition-colors flex flex-col items-center justify-center">
+                    <i class="fas fa-camera text-indigo-500 text-2xl mb-2"></i>
+                    <span class="block text-[10px] font-bold text-indigo-700 dark:text-indigo-400 uppercase">Tomar Foto</span>
+                    <input type="file" id="avatar-capture" class="hidden" accept="image/*" capture="user" onchange="handleAvatarUpload(event)">
+                </label>
+            </div>
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 font-black">O elige un icono Élite</p>
+            <div class="grid grid-cols-5 gap-2 mb-6" id="avatar-icon-grid"></div>
+            <button onclick="guardarAvatar()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-black uppercase text-xs shadow-md hover:bg-indigo-700 active:scale-95 transition-transform">Guardar Mi Identidad</button>
+        </div>
+    </div>
 
-            <p class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 font-black">2. O elige un icono Élite</p>
-
-            <div class="grid grid-cols-5 gap-2 mb-6" id="avatar-icon-grid">
-                <!-- Se inyecta por JS -->
+    <!-- MODAL GESTOR DE PERFILES -->
+    <div id="modal-perfiles" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 max-w-sm w-full rounded-[2.5rem] p-6 text-center shadow-2xl border border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-black uppercase text-slate-900 dark:text-white tracking-tighter">Gestor de Perfiles</h2>
+                <button onclick="cerrarModal('modal-perfiles')"><i class="fas fa-times-circle text-slate-300 text-2xl hover:text-red-500 transition-colors"></i></button>
             </div>
             
-            <button onclick="guardarAvatar()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-black uppercase text-xs shadow-md hover:bg-indigo-700 active:scale-95 transition-transform">Guardar Mi Identidad</button>
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 mb-4">
+                <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase font-black tracking-widest mb-3">Crear Nuevo Horario Vacío</p>
+                <input type="text" id="new-profile-name" class="w-full bg-white dark:bg-slate-800 border-2 border-indigo-100 dark:border-indigo-900/50 rounded-xl py-2 px-3 text-center text-xs font-black text-indigo-600 dark:text-indigo-400 outline-none focus:border-indigo-500 mb-3" placeholder="Ej. Semana de Exámenes">
+                <button onclick="crearPerfil()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-black uppercase text-[10px] shadow-md hover:bg-indigo-700">Crear Perfil</button>
+            </div>
+
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800 mb-4">
+                <p class="text-blue-500 dark:text-blue-400 text-[10px] uppercase font-black tracking-widest mb-3">Ver Horario de un Amigo</p>
+                <input type="file" id="json-import-profile" class="hidden" accept=".json" onchange="importProfileFromJSON(event)">
+                <button onclick="document.getElementById('json-import-profile').click()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-black uppercase text-[10px] shadow-md flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-file-import text-sm"></i> Importar Backup (.json)
+                </button>
+                <p class="text-[9px] text-blue-400 dark:text-blue-300 mt-2 font-semibold">Crea un perfil seguro sin borrar el tuyo.</p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button onclick="eliminarPerfilActual()" class="w-full text-xs text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><i class="fas fa-trash"></i> Eliminar perfil que estás viendo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AJUSTES -->
+    <div id="modal-ajustes" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-8 w-full max-w-lg shadow-2xl h-auto max-h-[90vh] flex flex-col border border-slate-700 mobile-modal-anim">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Ajustes del Sistema</h3>
+                <button onclick="cerrarModal('modal-ajustes')"><i class="fas fa-times-circle text-slate-300 text-3xl hover:text-red-500 transition-colors"></i></button>
+            </div>
+            <div class="overflow-y-auto no-scrollbar space-y-6 flex-1 pb-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Día Comienza</label>
+                        <select id="select-hora-inicio" class="w-full bg-transparent text-sm font-black outline-none dark:text-white"></select>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Día Termina</label>
+                        <select id="select-hora-fin" class="w-full bg-transparent text-sm font-black outline-none dark:text-white"></select>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 col-span-2">
+                        <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Ciudad (Para el Clima)</label>
+                        <input type="text" id="input-ciudad" class="w-full bg-transparent text-sm font-black outline-none dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1" placeholder="Ej. Madrid, Bogotá, Miami...">
+                    </div>
+                </div>
+                
+                <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-800">
+                    <label class="block text-[9px] font-black uppercase text-indigo-500 mb-1">Visualización Hora</label>
+                    <select id="select-formato-hora" class="w-full bg-transparent text-sm font-black outline-none text-indigo-900 dark:text-indigo-200">
+                        <option value="24h">Formato 24 Horas</option>
+                        <option value="12h">Formato 12 Horas AM/PM</option>
+                    </select>
+                </div>
+                <div id="categorias-edit-list" class="space-y-2"></div>
+                
+                <div class="grid grid-cols-2 gap-3 pt-4 border-t dark:border-slate-700 text-slate-800 dark:text-white">
+                    <button onclick="exportJSON()" class="p-3 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-download text-lg"></i> Descargar Backup</button>
+                    <button onclick="cerrarModal('modal-ajustes'); gestionarPerfiles();" class="p-3 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-users text-lg"></i> Importar Amigo</button>
+                </div>
+            </div>
+            <button onclick="guardarAjustes()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95">Guardar Cambios</button>
+        </div>
+    </div>
+
+    <!-- MODAL GUÍA MÉDICA DETALLADA -->
+    <div id="modal-ayuda" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
+            <div class="bg-emerald-600 dark:bg-emerald-800 px-8 py-6 text-white flex justify-between items-center">
+                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Guía Médica Detallada</h3>
+                <button onclick="cerrarModal('modal-ayuda')"><i class="fas fa-times-circle text-2xl"></i></button>
+            </div>
+            <div id="contenido-guia-cientifica" class="p-6 md:p-8 overflow-y-auto space-y-6 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-sm">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7 a 9 horas | Adolescentes 8 a 10 horas.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos metabólicos. Es vital para la "neuroplasticidad": sin descanso, el cerebro no puede fijar lo aprendido en programación o música.</p>
+                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[9px] uppercase font-black text-indigo-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente Oficial: NICHD NIH</a>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-blue-700 dark:text-blue-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo (Deep Work)</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques de 25 a 90 min + 15 min de pausa total.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Forzar más de 90 min de atención analítica agota las reservas de glucosa prefrontal. Las pausas activas permiten que la red neuronal por defecto procese la información.</p>
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/31725384/" target="_blank" class="text-[9px] uppercase font-black text-blue-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: PubMed NIH - Fatigue Study</a>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-teal-700 dark:text-teal-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-clock"></i> 3. Ciclo Circadiano</h4>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed"><b>Mañana:</b> Pico de cortisol, ideal para lógica y resolución de problemas. <br><b>Tarde:</b> Pico de temperatura corporal, ideal para tareas físicas o creatividad fluida. <br><b>Noche:</b> Pico de melatonina, ideal para consolidación.</p>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6200866/" target="_blank" class="text-[9px] uppercase font-black text-teal-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: NIH PMC - Biological Rhythms</a>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-running"></i> 4. Actividad Física Metabólica</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Recomendación: 150-300 min semanales.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">El movimiento estimula el factor neurotrófico (BDNF), que actúa como un fertilizante para crear nuevas neuronas. Crucial para prevenir el sedentarismo tecnológico.</p>
+                    <a href="https://www.who.int/es/news-room/fact-sheets/detail/physical-activity" target="_blank" class="text-[9px] uppercase font-black text-emerald-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: OMS</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DIAGNÓSTICO CLÍNICO -->
+    <div id="modal-analisis" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
+            <div class="bg-purple-600 dark:bg-purple-800 px-8 py-6 text-white flex justify-between items-center">
+                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Escáner Bio-Salud y Rendimiento</h3>
+                <button onclick="cerrarModal('modal-analisis')"><i class="fas fa-times-circle text-2xl"></i></button>
+            </div>
+            <div id="reporte-contenido" class="p-6 md:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10">
+            </div>
         </div>
     </div>
 
@@ -299,7 +428,6 @@
             <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-inner"><i class="fas fa-tasks text-2xl"></i></div>
             <h2 class="text-2xl font-black mb-4 uppercase text-slate-900 dark:text-white tracking-tighter">Cerrar Semana</h2>
             <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 font-semibold">Tus estadísticas se guardarán en el historial. ¿Qué deseas limpiar?</p>
-            
             <div class="space-y-3 mb-8 text-left">
                 <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors text-slate-800 dark:text-white">
                     <input type="checkbox" id="chk-clear-text" checked class="w-5 h-5 accent-indigo-600">
@@ -339,126 +467,17 @@
             <button onclick="toggleTimer()" class="text-slate-400 hover:text-red-500 transition-colors"><i class="fas fa-times-circle text-lg"></i></button>
         </div>
         <div id="timer-display" class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter my-2 tabular-nums">25:00</div>
-        
         <div class="w-full flex justify-around mb-2">
              <button onclick="playFocusSound('rain')" title="Lluvia" class="text-blue-400 hover:scale-110 transition-transform bg-blue-50 dark:bg-blue-900/30 p-2 rounded-full"><i class="fas fa-cloud-showers-heavy"></i></button>
              <button onclick="playFocusSound('forest')" title="Bosque" class="text-emerald-400 hover:scale-110 transition-transform bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-full"><i class="fas fa-tree"></i></button>
              <button onclick="playFocusSound('cafe')" title="Cafetería" class="text-yellow-600 hover:scale-110 transition-transform bg-yellow-50 dark:bg-yellow-900/30 p-2 rounded-full"><i class="fas fa-coffee"></i></button>
              <button onclick="stopFocusSound()" title="Silencio" class="text-slate-400 hover:text-red-400 transition-transform bg-slate-100 dark:bg-slate-700 p-2 rounded-full"><i class="fas fa-volume-mute"></i></button>
         </div>
-
         <div class="flex gap-2 w-full">
             <button id="btn-start-timer" onclick="startTimer()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-black uppercase shadow-md">Iniciar</button>
             <button onclick="resetTimer(25)" class="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white py-2 rounded-xl text-xs font-black uppercase">Foco</button>
         </div>
         <button onclick="resetTimer(5)" class="w-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 py-2 rounded-xl text-xs font-black uppercase">Descanso</button>
-    </div>
-
-    <!-- MODAL PERFILES -->
-    <div id="modal-perfiles" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 max-w-sm w-full rounded-[2rem] p-6 text-center shadow-2xl border border-slate-700">
-            <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Nuevo Perfil</h2>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-4 font-semibold">Crea una nueva pizarra de horario (Ej. Exámenes, Verano).</p>
-            <input type="text" id="new-profile-name" class="w-full bg-slate-50 dark:bg-slate-900 border-2 border-indigo-100 dark:border-indigo-900/50 rounded-xl py-3 px-4 text-center text-sm font-black text-indigo-600 outline-none focus:border-indigo-500 mb-4" placeholder="Nombre del perfil...">
-            <div class="flex gap-2">
-                <button onclick="cerrarModal('modal-perfiles')" class="flex-1 bg-slate-100 dark:bg-slate-700 dark:text-white py-3 rounded-xl font-black uppercase text-xs">Cancelar</button>
-                <button onclick="crearPerfil()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-black uppercase text-xs shadow-md">Crear</button>
-            </div>
-            <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
-                <button onclick="eliminarPerfilActual()" class="text-xs text-red-500 font-bold hover:underline"><i class="fas fa-trash"></i> Eliminar el perfil actual</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL AJUSTES (CON CIUDAD) -->
-    <div id="modal-ajustes" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-8 w-full max-w-lg shadow-2xl h-auto max-h-[90vh] flex flex-col border border-slate-700 mobile-modal-anim">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Ajustes del Sistema</h3>
-                <button onclick="cerrarModal('modal-ajustes')"><i class="fas fa-times-circle text-slate-300 text-3xl hover:text-red-500 transition-colors"></i></button>
-            </div>
-            <div class="overflow-y-auto no-scrollbar space-y-6 flex-1 pb-6">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                        <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Día Comienza</label>
-                        <select id="select-hora-inicio" class="w-full bg-transparent text-sm font-black outline-none dark:text-white"></select>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                        <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Día Termina</label>
-                        <select id="select-hora-fin" class="w-full bg-transparent text-sm font-black outline-none dark:text-white"></select>
-                    </div>
-                    
-                    <!-- Nueva Opción de Ciudad -->
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 col-span-2">
-                        <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Ciudad (Para el Clima)</label>
-                        <input type="text" id="input-ciudad" class="w-full bg-transparent text-sm font-black outline-none dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1" placeholder="Ej. Madrid, Bogotá, Miami...">
-                        <p class="text-[8px] text-slate-400 mt-1">Escribe tu ciudad para forzar el widget de clima si falla la ubicación.</p>
-                    </div>
-                </div>
-                
-                <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-800">
-                    <label class="block text-[9px] font-black uppercase text-indigo-500 mb-1">Visualización Hora</label>
-                    <select id="select-formato-hora" class="w-full bg-transparent text-sm font-black outline-none text-indigo-900 dark:text-indigo-200">
-                        <option value="24h">Formato 24 Horas</option>
-                        <option value="12h">Formato 12 Horas AM/PM</option>
-                    </select>
-                </div>
-                <div id="categorias-edit-list" class="space-y-2"></div>
-                <div class="grid grid-cols-2 gap-3 pt-4 border-t dark:border-slate-700 text-slate-800 dark:text-white">
-                    <button onclick="exportJSON()" class="p-3 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-download text-lg"></i> Backup</button>
-                    <button onclick="document.getElementById('json-import').click()" class="p-3 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-upload text-lg"></i> Importar</button>
-                    <input type="file" id="json-import" class="hidden" accept=".json" onchange="importJSON(event)">
-                </div>
-            </div>
-            <button onclick="guardarAjustes()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95">Guardar Todo</button>
-        </div>
-    </div>
-
-    <!-- MODAL GUÍA MÉDICA -->
-    <div id="modal-ayuda" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
-            <div class="bg-emerald-600 dark:bg-emerald-800 px-8 py-6 text-white flex justify-between items-center">
-                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Guía Médica Detallada</h3>
-                <button onclick="cerrarModal('modal-ayuda')"><i class="fas fa-times-circle text-2xl"></i></button>
-            </div>
-            <div id="contenido-guia-cientifica" class="p-6 md:p-8 overflow-y-auto space-y-6 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-sm">
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
-                    <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7 a 9 horas | Adolescentes 8 a 10 horas.</p>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos. Es vital para fijar lo aprendido.</p>
-                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[9px] uppercase font-black text-indigo-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente Oficial: NICHD NIH</a>
-                </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-blue-700 dark:text-blue-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo</h4>
-                    <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques de 25 a 90 min + 15 min de pausa total.</p>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Forzar más de 90 min agota la glucosa prefrontal. Las pausas permiten procesar la información.</p>
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/31725384/" target="_blank" class="text-[9px] uppercase font-black text-blue-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: PubMed NIH</a>
-                </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-teal-700 dark:text-teal-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-clock"></i> 3. Ciclo Circadiano</h4>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed"><b>Mañana:</b> Pico de cortisol, ideal para lógica. <br><b>Tarde:</b> Tareas físicas o creatividad fluida. <br><b>Noche:</b> Pico de melatonina, ideal para consolidación y descanso.</p>
-                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6200866/" target="_blank" class="text-[9px] uppercase font-black text-teal-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: NIH PMC</a>
-                </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-running"></i> 4. Actividad Física</h4>
-                    <p class="font-semibold text-slate-700 dark:text-slate-300">Recomendación: 150-300 min semanales.</p>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">El movimiento estimula el factor neurotrófico (BDNF). Crucial para prevenir el sedentarismo.</p>
-                    <a href="https://www.who.int/es/news-room/fact-sheets/detail/physical-activity" target="_blank" class="text-[9px] uppercase font-black text-emerald-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: OMS</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DIAGNÓSTICO -->
-    <div id="modal-analisis" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
-            <div class="bg-purple-600 dark:bg-purple-800 px-8 py-6 text-white flex justify-between items-center">
-                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Escáner Bio-Salud y Rendimiento</h3>
-                <button onclick="cerrarModal('modal-analisis')"><i class="fas fa-times-circle text-2xl"></i></button>
-            </div>
-            <div id="reporte-contenido" class="p-6 md:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10">
-            </div>
-        </div>
     </div>
 
     <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-32 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-[6000] font-black tracking-wide text-[10px] md:text-xs border border-slate-800 dark:border-slate-200">
@@ -474,17 +493,19 @@
         
         let timerInterval; let timeLeft = 25 * 60; let isRunning = false; let currentAudio = null;
         let userXP = parseInt(localStorage.getItem('kairos_xp')) || 0;
+        
         let profiles = JSON.parse(localStorage.getItem('kairos_profiles')) || { 'default': 'Rutina Normal' };
         let currentProfile = localStorage.getItem('kairos_currentProfile') || 'default';
+        if(!profiles[currentProfile]) { currentProfile = Object.keys(profiles)[0] || 'default'; }
         let storageKey = `horarioPersonalPro_${currentProfile}`;
         
-        // Avatar Logic
         let userAvatar = localStorage.getItem('kairos_avatar') || '<i class="fas fa-user-astronaut text-xl md:text-2xl text-indigo-300"></i>';
         const presetIcons = ['fa-user-astronaut', 'fa-user-ninja', 'fa-user-secret', 'fa-user-tie', 'fa-user-graduate', 'fa-female', 'fa-user', 'fa-crown', 'fa-gem', 'fa-fire', 'fa-cat', 'fa-dog', 'fa-dragon', 'fa-ghost', 'fa-robot'];
         let tempAvatar = userAvatar;
         
         const categoriasDefault = [
             { id: 'neutral', nombre: 'Texto', bgClass: 'bg-transparent', borderClass: 'border-slate-300', isSpecial: true },
+            { id: 'sync', nombre: 'Vincular', bgClass: 'sync-mode', borderClass: 'border-indigo-500', isSpecial: true },
             { id: 'salud', nombre: 'Salud', bgClass: 'bg-emerald-100', borderClass: 'border-emerald-400', isSpecial: false },
             { id: 'trabajo', nombre: 'Trabajo', bgClass: 'bg-blue-100', borderClass: 'border-blue-400', isSpecial: false },
             { id: 'proyectos', nombre: 'Proyectos', bgClass: 'bg-orange-100', borderClass: 'border-orange-400', isSpecial: false },
@@ -497,15 +518,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             inicializarModoOscuro();
             cargarConfiguracionAjustes();
-            cargarTitulo();
             initProfiles();
+            cargarTitulo();
             actualizarAvatarUI();
             loadWeather();
             updateXP();
             
             if (!userName) openTutorial(true); else actualizarNombreUI();
 
-            colorActivo = categorias[1].bgClass; 
+            colorActivo = categorias[2].bgClass; // Select first color (Salud) as default instead of text
             marcarDiaActual();
             renderizarPaleta();
             renderizarTabla();
@@ -547,7 +568,7 @@
                 btn.innerHTML = `<i class="fas ${icon}"></i>`;
                 btn.onclick = () => {
                     tempAvatar = `<i class="fas ${icon} text-xl md:text-2xl text-indigo-300"></i>`;
-                    abrirModalAvatar(); // re-render to show selection
+                    abrirModalAvatar(); 
                 };
                 grid.appendChild(btn);
             });
@@ -571,12 +592,13 @@
                         ctx.drawImage(img, 0, 0, width, height);
                         tempAvatar = canvas.toDataURL('image/jpeg', 0.8);
                         abrirModalAvatar();
-                        mostrarToast("Foto lista, presiona Guardar.", "blue");
+                        mostrarToast("Foto capturada, presiona Guardar.", "blue");
                     };
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
+            event.target.value = '';
         }
 
         function guardarAvatar() {
@@ -635,7 +657,7 @@
             if(userCity) {
                 fetchWeatherByCity(userCity);
             } else {
-                const fallbackLat = 10.9685; // Barranquilla
+                const fallbackLat = 10.9685; 
                 const fallbackLon = -74.7813;
                 if("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(
@@ -665,7 +687,7 @@
             }
         }
 
-        // --- MULTI PERFILES ---
+        // --- MULTI PERFILES Y BACKUPS ---
         function initProfiles() {
             const select = document.getElementById('profile-selector');
             select.innerHTML = '';
@@ -680,6 +702,9 @@
             currentProfile = id;
             localStorage.setItem('kairos_currentProfile', currentProfile);
             storageKey = `horarioPersonalPro_${currentProfile}`;
+            
+            document.getElementById('app-title').innerText = profiles[id];
+            
             renderizarTabla(); cargarHorario(); calcularEstadisticas();
             mostrarToast(`Cambiado al perfil: ${profiles[id]}`);
         }
@@ -705,6 +730,37 @@
                 localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
                 switchProfile('default'); initProfiles(); cerrarModal('modal-perfiles');
             }
+        }
+
+        function importProfileFromJSON(e) { 
+            const r = new FileReader(); 
+            r.onload = (ev) => { 
+                try { 
+                    const d = JSON.parse(ev.target.result); 
+                    const newId = 'prof_imp_' + new Date().getTime();
+                    const profileName = `[Imp] ${d.name || 'Amigo'}`;
+                    
+                    profiles[newId] = profileName;
+                    localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
+                    localStorage.setItem(`horarioPersonalPro_${newId}`, d.datos);
+                    
+                    if(confirm(`¿Aplicar también colores y horas del backup de ${d.name || 'este archivo'}?\n(Afectará la vista de todos tus perfiles locales)`)) {
+                        if(d.cats) localStorage.setItem('horarioCategorias', JSON.stringify(d.cats));
+                        if(d.hStart !== undefined) localStorage.setItem('horarioHoras', JSON.stringify({inicio:d.hStart, fin:d.hEnd}));
+                        if(d.fmt) localStorage.setItem('horarioFormatoHora', d.fmt);
+                    }
+                    
+                    switchProfile(newId);
+                    initProfiles();
+                    cerrarModal('modal-perfiles');
+                    mostrarToast("¡Backup importado exitosamente!");
+                    setTimeout(() => location.reload(), 1000);
+                } catch(err) { 
+                    mostrarToast("Archivo Inválido o Corrupto", "red"); 
+                } 
+            }; 
+            if(e.target.files[0]) r.readAsText(e.target.files[0]); 
+            e.target.value = ''; 
         }
 
         // --- TUTORIAL ---
@@ -842,7 +898,6 @@
 
             let html = "";
 
-            // Balance Mental
             html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">`;
             html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-brain text-indigo-500"></i> Carga Analítica y Cognitiva</h4>`;
             html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Total carga mental detectada: ${cargaCognitiva} horas semanales</p>`;
@@ -853,7 +908,6 @@
             else { html += `<div class="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-2xl border border-blue-200 dark:border-blue-800/50"><p class="text-sm font-semibold"><b>ℹ️ CARGA LIGERA:</b> Tienes mucha capacidad libre.</p></div>`; }
             html += `<a href="https://www.medicalnewstoday.com/articles/cognitive-fatigue" target="_blank" class="text-[10px] uppercase font-black tracking-widest text-indigo-500 underline mt-4 inline-block"><i class="fas fa-link"></i> Ciencia del Foco (Medical News)</a></div>`;
 
-            // Balance del Sistema Nervioso
             html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break">`;
             html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-couch text-yellow-500"></i> Recuperación Parasimpática</h4>`;
             html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Ocio y Desconexión: ${horasOcio} horas semanales</p>`;
@@ -861,7 +915,6 @@
             else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ SISTEMA BALANCEADO:</b> Tu cuerpo repara tejidos correctamente.</p></div>`; }
             html += `</div>`;
 
-            // Balance Físico
             html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break">`;
             html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-running text-emerald-500"></i> Salud Metabólica</h4>`;
             html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Salud / Movimiento: ${horasSalud} horas</p>`;
@@ -895,7 +948,7 @@
             const archive = JSON.parse(localStorage.getItem('kairos_archive') || '[]'); archive.splice(idx, 1); localStorage.setItem('kairos_archive', JSON.stringify(archive)); abrirModalHistorial();
         }
 
-        // --- CORE ---
+        // --- CORE MAIN ---
         function actualizarNombreUI() { document.getElementById('display-user-name').innerText = userName; }
         function updateLiveClock() {
             const n = new Date();
@@ -915,8 +968,20 @@
             categorias.forEach(cat => {
                 const btn = document.createElement('button');
                 btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border-2 transition-all ${cat.bgClass} ${cat.bgClass === colorActivo ? cat.borderClass + ' scale-110 shadow-md' : 'border-transparent'}`;
-                btn.innerHTML = `<div class="w-2.5 h-2.5 rounded-full ${cat.id==='borrar'?'bg-white border':cat.bgClass.replace('100','400')}"></div>${cat.nombre}`;
-                btn.onclick = () => { colorActivo = cat.bgClass; renderizarPaleta(); };
+                
+                let circleColor = '';
+                if(cat.id === 'borrar' || cat.id === 'neutral') circleColor = 'bg-white border border-slate-300';
+                else if(cat.id === 'sync') circleColor = 'bg-indigo-500';
+                else circleColor = cat.bgClass.replace('100','400');
+                
+                btn.innerHTML = `<div class="w-2.5 h-2.5 rounded-full ${circleColor} flex items-center justify-center">${cat.id === 'sync' ? '<i class="fas fa-link text-[6px] text-white"></i>' : ''}</div>${cat.nombre}`;
+                
+                btn.onclick = () => { 
+                    colorActivo = cat.bgClass; 
+                    renderizarPaleta(); 
+                    if(cat.id === 'sync') mostrarToast("Vincular: Arrastra para agrupar días.", "blue");
+                    else document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active'));
+                };
                 p.appendChild(btn);
             });
         }
@@ -948,11 +1013,43 @@
                                 if(document.getElementById('timer-widget').classList.contains('hidden')) toggleTimer();
                                 startTimer();
                             }
+                            
+                            // Lógica VINCULAR (Sincronizar Textos)
+                            if(edit.classList.contains('sync-active')) {
+                                const txt = edit.innerText;
+                                document.querySelectorAll('.sync-active').forEach(el => {
+                                    if(el !== edit) el.innerText = txt;
+                                });
+                            }
                         };
                         
-                        edit.onmousedown = (e) => { if(colorActivo!=='bg-transparent'){ isDragging=true; paintCell(td); e.preventDefault(); edit.focus(); } };
-                        edit.onmouseenter = () => { if(isDragging && colorActivo!=='bg-transparent') paintCell(td); };
+                        edit.onmousedown = (e) => { 
+                            if(colorActivo === 'sync-mode') {
+                                isDragging = true;
+                                if(!edit.classList.contains('sync-active')) {
+                                    document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active'));
+                                    edit.classList.add('sync-active');
+                                    e.preventDefault(); 
+                                    edit.focus();
+                                }
+                            }
+                            else if(colorActivo !== 'bg-transparent'){ 
+                                isDragging=true; paintCell(td); e.preventDefault(); edit.focus(); 
+                            } 
+                        };
+                        
+                        edit.onmouseenter = () => { 
+                            if(isDragging) {
+                                if(colorActivo === 'sync-mode') {
+                                    edit.classList.add('sync-active');
+                                } else if(colorActivo !== 'bg-transparent') {
+                                    paintCell(td); 
+                                }
+                            }
+                        };
+                        
                         edit.onblur = () => { guardarDatosEnMemoria(); calcularEstadisticas(); };
+                        
                         edit.ondblclick = () => { 
                             if(edit.innerText.trim()){ 
                                 edit.classList.toggle('task-completed'); 
@@ -960,6 +1057,7 @@
                                 guardarDatosEnMemoria(); 
                             } 
                         };
+                        
                         td.appendChild(edit); tr.appendChild(td);
                     });
                     body.appendChild(tr);
@@ -969,7 +1067,8 @@
 
         function paintCell(td) {
             td.classList.forEach(c => { if(c.startsWith('bg-') && !c.includes('transparent')) td.classList.remove(c); });
-            if(colorActivo==='bg-white') td.classList.add('bg-transparent'); else td.classList.add(colorActivo);
+            if(colorActivo === 'bg-white') td.classList.add('bg-transparent'); 
+            else if(colorActivo !== 'sync-mode') td.classList.add(colorActivo);
         }
 
         function guardarDatosEnMemoria() {
@@ -1034,8 +1133,19 @@
             formatoHora = localStorage.getItem('horarioFormatoHora') || '24h';
             userCity = localStorage.getItem('kairos_city') || '';
         }
-        function cargarTitulo() { const t = localStorage.getItem('horarioTitulo'); if(t) document.getElementById('app-title').innerText = t; }
-        function guardarTitulo() { localStorage.setItem('horarioTitulo', document.getElementById('app-title').innerText); }
+        function cargarTitulo() { 
+            if(profiles[currentProfile]) {
+                document.getElementById('app-title').innerText = profiles[currentProfile]; 
+            }
+        }
+        function guardarTitulo() { 
+            const newTitle = document.getElementById('app-title').innerText.trim();
+            if(newTitle) {
+                profiles[currentProfile] = newTitle;
+                localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
+                initProfiles();
+            }
+        }
         function marcarDiaActual() { window.currentDayIndex = (new Date().getDay() + 6) % 7; }
         function cerrarModal(id) { document.getElementById(id).classList.add('hidden'); }
         function mostrarToast(m, c='green') {
@@ -1086,8 +1196,7 @@
             }, 1000);
         }
 
-        function exportJSON() { const b = new Blob([JSON.stringify({datos:localStorage.getItem(storageKey), cats:categorias, hStart:horaInicio, hEnd:horaFin, fmt:formatoHora, title:localStorage.getItem('horarioTitulo'), name:userName, archive: localStorage.getItem('kairos_archive')})], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kairos_elite_backup.json'; a.click(); }
-        function importJSON(e) { const r = new FileReader(); r.onload = (ev) => { const d = JSON.parse(ev.target.result); localStorage.setItem(storageKey, d.datos); localStorage.setItem('horarioCategorias', JSON.stringify(d.cats)); localStorage.setItem('horarioHoras', JSON.stringify({inicio:d.hStart, fin:d.hEnd})); localStorage.setItem('horarioFormatoHora', d.fmt); localStorage.setItem('horarioTitulo', d.title); localStorage.setItem('kairos_userName', d.name); if(d.archive) localStorage.setItem('kairos_archive', d.archive); location.reload(); }; r.readAsText(e.target.files[0]); }
+        function exportJSON() { const b = new Blob([JSON.stringify({datos:localStorage.getItem(storageKey), cats:categorias, hStart:horaInicio, hEnd:horaFin, fmt:formatoHora, title:document.getElementById('app-title').innerText, name:userName, archive: localStorage.getItem('kairos_archive')})], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kairos_elite_backup.json'; a.click(); }
         
         function abrirModalAjustes() {
             const sI = document.getElementById('select-hora-inicio'); const sF = document.getElementById('select-hora-fin');
@@ -1121,7 +1230,7 @@
             document.getElementById('reporte-contenido').innerHTML = obtenerHTMLReporteSalud();
             document.getElementById('modal-analisis').classList.remove('hidden'); 
         }
-        function confirmarLimpiar() { if(confirm("¿BORRAR TODO? Se perderán las actividades actuales.")) { localStorage.removeItem(storageKey); location.reload(); } }
+        function confirmarLimpiar() { if(confirm("¿BORRAR TODO EL PERFIL ACTUAL?")) { localStorage.removeItem(storageKey); location.reload(); } }
     </script>
 </body>
 </html>
