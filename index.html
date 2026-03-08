@@ -382,7 +382,13 @@
                 <div class="grid grid-cols-2 gap-3 pt-4 border-t dark:border-slate-700 text-slate-800 dark:text-white">
                     <button onclick="exportJSON()" class="p-3 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-download text-lg"></i> Descargar Backup</button>
                     <button onclick="cerrarModal('modal-ajustes'); gestionarPerfiles();" class="p-3 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-users text-lg"></i> Importar Amigo</button>
-                    <input type="file" id="json-import" class="hidden" accept=".json" onchange="importJSON(event)">
+                </div>
+
+                <!-- BOTÓN DE FORMATEO (NUEVO) -->
+                <div class="mt-6 pt-4 border-t border-red-100 dark:border-red-900/30 text-center">
+                    <button onclick="factoryReset()" class="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors">
+                        <i class="fas fa-skull-crossbones mr-1"></i> Restablecer App de Fábrica
+                    </button>
                 </div>
             </div>
             <button onclick="guardarAjustes()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95">Guardar Cambios</button>
@@ -400,13 +406,13 @@
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
                     <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7 a 9 horas | Adolescentes 8 a 10 horas.</p>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos. Es vital para fijar lo aprendido.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos metabólicos. Es vital para la "neuroplasticidad": sin descanso, el cerebro no puede fijar lo aprendido.</p>
                     <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[9px] uppercase font-black text-indigo-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente Oficial: NICHD NIH</a>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
                     <h4 class="font-black text-blue-700 dark:text-blue-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo (Deep Work)</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques de 25 a 90 min + 15 min de pausa total.</p>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Forzar más de 90 min agota la glucosa prefrontal. Las pausas permiten procesar la información.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Forzar más de 90 min de atención analítica agota las reservas de glucosa prefrontal. Las pausas activas permiten que la red neuronal por defecto procese la información.</p>
                     <a href="https://pubmed.ncbi.nlm.nih.gov/31725384/" target="_blank" class="text-[9px] uppercase font-black text-blue-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: PubMed NIH - Fatigue Study</a>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
@@ -1101,12 +1107,17 @@
 
         function inicializarModoOscuro() { if(localStorage.getItem('theme')==='dark') document.documentElement.classList.add('dark'); }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light'); }
+        
         function cargarConfiguracionAjustes() {
             const c = localStorage.getItem('horarioCategorias'); 
             if(c) {
                 categorias = JSON.parse(c); 
+                // Parche de auto-recuperación para "Seleccionar" y "Vincular"
                 if(!categorias.find(x => x.id === 'select')) {
                     categorias.splice(0, 0, { id: 'select', nombre: 'Seleccionar', bgClass: 'select-mode', borderClass: 'border-indigo-500', isSpecial: true });
+                }
+                if(!categorias.find(x => x.id === 'sync')) {
+                    categorias.splice(1, 0, { id: 'sync', nombre: 'Vincular', bgClass: 'sync-mode', borderClass: 'border-indigo-500', isSpecial: true });
                 }
             } else { categorias = JSON.parse(JSON.stringify(categoriasDefault)); }
             
@@ -1115,6 +1126,7 @@
             userCity = localStorage.getItem('kairos_city') || '';
             fontSize = localStorage.getItem('kairos_fontSize') || 'text-[10px]';
         }
+        
         function cargarTitulo() { const el = document.getElementById('app-title'); if(el && profiles[currentProfile]) { el.innerText = profiles[currentProfile]; } }
         function guardarTitulo() { const el = document.getElementById('app-title'); if(el) { const newTitle = el.innerText.trim(); if(newTitle) { profiles[currentProfile] = newTitle; localStorage.setItem('kairos_profiles', JSON.stringify(profiles)); initProfiles(); } } }
         function marcarDiaActual() { window.currentDayIndex = (new Date().getDay() + 6) % 7; }
@@ -1222,7 +1234,21 @@
             if(rep) rep.innerHTML = obtenerHTMLReporteSalud();
             document.getElementById('modal-analisis').classList.remove('hidden'); 
         }
-        function confirmarLimpiar() { if(confirm("¿BORRAR TODO EL PERFIL ACTUAL? Se perderán las actividades actuales.")) { localStorage.removeItem(storageKey); location.reload(); } }
+        
+        // --- FACTORY RESET (NUEVO) ---
+        function factoryReset() { 
+            if(confirm("🚨 ADVERTENCIA: ¿Estás completamente seguro de querer formatear la app?\n\nEsto borrará TODO: horarios, perfiles, historial, avatar, configuración y XP. La app quedará como recién instalada. Esta acción NO se puede deshacer.")) { 
+                const keysToRemove = [];
+                for(let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if(key.startsWith('kairos_') || key.startsWith('horario') || key === 'theme' || key === 'gold_unlocked') {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(k => localStorage.removeItem(k));
+                location.reload(); 
+            } 
+        }
     </script>
 </body>
 </html>
