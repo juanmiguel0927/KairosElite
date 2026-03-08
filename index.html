@@ -358,6 +358,16 @@
                         <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Ciudad (Para el Clima)</label>
                         <input type="text" id="input-ciudad" class="w-full bg-transparent text-sm font-black outline-none dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1" placeholder="Ej. Madrid, Bogotá, Miami...">
                     </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 col-span-2">
+                        <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Tamaño de Fuente (Tabla)</label>
+                        <select id="select-font-size" class="w-full bg-transparent text-sm font-black outline-none dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1">
+                            <option value="text-[10px]">Pequeña</option>
+                            <option value="text-xs">Normal</option>
+                            <option value="text-sm">Grande</option>
+                            <option value="text-base">Muy Grande</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-800">
@@ -497,6 +507,7 @@
         let horaInicio = 6; let horaFin = 23; let formatoHora = '24h'; let isDarkMode = false;
         let userName = localStorage.getItem('kairos_userName') || '';
         let userCity = localStorage.getItem('kairos_city') || '';
+        let fontSize = localStorage.getItem('kairos_fontSize') || 'text-[10px]';
         
         let timerInterval; let timeLeft = 25 * 60; let isRunning = false; let currentAudio = null;
         let userXP = parseInt(localStorage.getItem('kairos_xp')) || 0;
@@ -962,7 +973,7 @@
                     dias.forEach((_, di) => {
                         const td = document.createElement('td'); td.className = `border-r dark:border-slate-800 p-0.5 relative ${di===window.currentDayIndex?'current-day-col':''}`;
                         const edit = document.createElement('div');
-                        edit.className = 'editable-content w-full h-full min-h-[35px] p-2 rounded-lg outline-none text-[10px] font-bold text-slate-800 dark:text-white transition-all';
+                        edit.className = `editable-content w-full h-full min-h-[35px] p-2 rounded-lg outline-none ${fontSize} font-bold text-slate-800 dark:text-white transition-all`;
                         edit.contentEditable = true; edit.dataset.dia = di; edit.dataset.hora = `${h.toString().padStart(2,'0')}:${m}`;
                         
                         edit.oninput = () => {
@@ -1102,6 +1113,7 @@
             const h = localStorage.getItem('horarioHoras'); if(h){ const o = JSON.parse(h); horaInicio=o.inicio; horaFin=o.fin; }
             formatoHora = localStorage.getItem('horarioFormatoHora') || '24h';
             userCity = localStorage.getItem('kairos_city') || '';
+            fontSize = localStorage.getItem('kairos_fontSize') || 'text-[10px]';
         }
         function cargarTitulo() { const el = document.getElementById('app-title'); if(el && profiles[currentProfile]) { el.innerText = profiles[currentProfile]; } }
         function guardarTitulo() { const el = document.getElementById('app-title'); if(el) { const newTitle = el.innerText.trim(); if(newTitle) { profiles[currentProfile] = newTitle; localStorage.setItem('kairos_profiles', JSON.stringify(profiles)); initProfiles(); } } }
@@ -1166,7 +1178,7 @@
             }, 1000);
         }
 
-        function exportJSON() { const b = new Blob([JSON.stringify({datos:localStorage.getItem(storageKey), cats:categorias, hStart:horaInicio, hEnd:horaFin, fmt:formatoHora, title:document.getElementById('app-title').innerText, name:userName, archive: localStorage.getItem('kairos_archive')})], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kairos_elite_backup.json'; a.click(); }
+        function exportJSON() { const b = new Blob([JSON.stringify({datos:localStorage.getItem(storageKey), cats:categorias, hStart:horaInicio, hEnd:horaFin, fmt:formatoHora, title:document.getElementById('app-title').innerText, name:userName, archive: localStorage.getItem('kairos_archive'), fontSize: fontSize})], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kairos_elite_backup.json'; a.click(); }
         
         function abrirModalAjustes() {
             const sI = document.getElementById('select-hora-inicio'); const sF = document.getElementById('select-hora-fin');
@@ -1178,6 +1190,9 @@
             sI.value = horaInicio; sF.value = horaFin;
             document.getElementById('input-ciudad').value = userCity;
             
+            const fontSelect = document.getElementById('select-font-size');
+            if(fontSelect) fontSelect.value = fontSize;
+            
             const list = document.getElementById('categorias-edit-list'); list.innerHTML = '';
             categorias.forEach((cat, i) => { if(cat.isSpecial) return; list.innerHTML += `<div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl"><div class="w-4 h-4 rounded-full ${cat.bgClass.replace('100','400')}"></div><input type="text" id="cat-in-${i}" value="${cat.nombre}" class="bg-transparent outline-none font-bold text-xs dark:text-white flex-1"></div>`; });
             document.getElementById('modal-ajustes').classList.remove('hidden');
@@ -1188,6 +1203,12 @@
             formatoHora = document.getElementById('select-formato-hora').value;
             userCity = document.getElementById('input-ciudad').value.trim();
             localStorage.setItem('kairos_city', userCity);
+            
+            const fontSelect = document.getElementById('select-font-size');
+            if(fontSelect) {
+                fontSize = fontSelect.value;
+                localStorage.setItem('kairos_fontSize', fontSize);
+            }
             
             categorias.forEach((cat, i) => { if(!cat.isSpecial){ const val = document.getElementById(`cat-in-${i}`).value; if(val) cat.nombre = val; } });
             localStorage.setItem('horarioHoras', JSON.stringify({inicio:horaInicio, fin:horaFin}));
