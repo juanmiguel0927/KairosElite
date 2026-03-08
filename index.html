@@ -37,15 +37,12 @@
         
         .task-completed { text-decoration: line-through; opacity: 0.4; filter: grayscale(80%); font-style: italic; }
         
-        /* NUEVO: Estilo para celdas vinculadas (Sync Mode) */
-        .sync-active {
-            outline: 2px dashed #6366F1 !important;
-            outline-offset: -2px;
-            background-color: rgba(99, 102, 241, 0.15) !important;
-        }
-        .dark .sync-active {
-            background-color: rgba(99, 102, 241, 0.3) !important;
-        }
+        /* Herramientas Especiales: Vincular y Seleccionar */
+        .sync-active { outline: 2px dashed #6366F1 !important; outline-offset: -2px; background-color: rgba(99, 102, 241, 0.15) !important; }
+        .dark .sync-active { background-color: rgba(99, 102, 241, 0.3) !important; }
+        
+        .selected-cell { outline: 2px dashed #ef4444 !important; outline-offset: -2px; background-color: rgba(239, 68, 68, 0.15) !important; }
+        .dark .selected-cell { background-color: rgba(239, 68, 68, 0.3) !important; }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; touch-action: pan-x; }
@@ -107,6 +104,17 @@
         <i class="fas fa-arrow-left"></i> Salir del Modo Zen
     </button>
 
+    <!-- BARRA FLOTANTE SELECCIÓN MÚLTIPLE -->
+    <div id="selection-bar" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 translate-y-40 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-4 rounded-full shadow-2xl flex items-center gap-4 z-[8000] pointer-events-none border border-slate-800 dark:border-slate-200">
+        <span id="selection-count" class="text-xs sm:text-sm font-black tracking-widest border-r border-slate-700 dark:border-slate-300 pr-4">0 SELECCIONADAS</span>
+        <button onclick="borrarSeleccion()" class="text-xs sm:text-sm font-black text-red-400 hover:text-red-300 dark:text-red-500 dark:hover:text-red-600 flex items-center gap-1.5 transition-colors pointer-events-auto uppercase tracking-tighter">
+            <i class="fas fa-trash-alt"></i> Borrar Todo
+        </button>
+        <button onclick="cancelarSeleccion()" class="text-xs sm:text-sm font-bold text-slate-400 hover:text-white dark:text-slate-500 dark:hover:text-slate-800 flex items-center transition-colors pointer-events-auto pl-2 uppercase">
+            <i class="fas fa-times"></i> Cancelar
+        </button>
+    </div>
+
     <!-- MODAL ONBOARDING -->
     <div id="tutorial-modal" class="fixed inset-0 z-[5000] modal-overlay hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 max-w-md w-full rounded-[3rem] p-8 text-center shadow-2xl border border-slate-700 transform transition-all" id="tutorial-container">
@@ -119,8 +127,8 @@
             </div>
             <div id="step-1" class="step-content hidden text-left">
                 <h3 class="text-indigo-500 font-black text-[10px] uppercase mb-1">Tutorial 1/4</h3>
-                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Pintar y Vincular</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Selecciona un <b>Pincel</b> y arrastra para pintar. Si usas la herramienta <b>Vincular</b> (🔗), podrás escribir en varios días al mismo tiempo.</p>
+                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Pintar, Vincular y Seleccionar</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Usa la paleta para pintar. Usa la herramienta <b>Vincular</b> (🔗) para escribir en varios días a la vez, o <b>Seleccionar</b> (🖱️) para borrar casillas por lotes.</p>
                 <button onclick="goToStep(2)" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs active:scale-95">Entendido</button>
             </div>
             <div id="step-2" class="step-content hidden text-left">
@@ -226,7 +234,6 @@
         </div>
     </header>
 
-    <!-- ÁREA PRINCIPAL -->
     <div id="app-container" class="max-w-7xl mx-auto px-4 md:px-8">
         
         <div class="toolbar-section bg-white dark:bg-slate-800 p-3 md:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-2 flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -236,7 +243,7 @@
             </div>
             <div class="flex gap-2 w-full md:w-auto shrink-0">
                 <button onclick="gestionarPerfiles()" class="flex-1 md:flex-none px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-indigo-200 dark:border-indigo-800 transition-all flex items-center justify-center gap-2">
-                    <i class="fas fa-users-cog"></i> Perfiles & Backup
+                    <i class="fas fa-users-cog"></i> Perfiles
                 </button>
                 <button onclick="rellenarDescansos()" class="flex-1 md:flex-none px-4 py-2.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-yellow-200 dark:border-yellow-800 transition-all flex items-center justify-center gap-2">
                     <i class="fas fa-bolt"></i> Auto-Ocio
@@ -249,12 +256,8 @@
                 </button>
             </div>
         </div>
-        
-        <div class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2 px-2">
-            <i class="fas fa-info-circle text-indigo-400 shrink-0"></i> <span>Usa la herramienta <b>Vincular</b> (🔗) para seleccionar varios días y escribir en todos a la vez.</span>
-        </div>
 
-        <div id="contenedor-horario" class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
+        <div id="contenedor-horario" class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden mb-8 mt-4">
             <div class="overflow-x-auto no-scrollbar">
                 <table class="w-full min-w-[800px] border-collapse" id="schedule-table">
                     <thead>
@@ -328,7 +331,7 @@
             </div>
 
             <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
-                <button onclick="eliminarPerfilActual()" class="w-full text-xs text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><i class="fas fa-trash"></i> Eliminar perfil que estás viendo</button>
+                <button onclick="eliminarPerfilActual()" class="w-full text-xs text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><i class="fas fa-trash"></i> Eliminar perfil actual</button>
             </div>
         </div>
     </div>
@@ -369,6 +372,7 @@
                 <div class="grid grid-cols-2 gap-3 pt-4 border-t dark:border-slate-700 text-slate-800 dark:text-white">
                     <button onclick="exportJSON()" class="p-3 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-download text-lg"></i> Descargar Backup</button>
                     <button onclick="cerrarModal('modal-ajustes'); gestionarPerfiles();" class="p-3 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-users text-lg"></i> Importar Amigo</button>
+                    <input type="file" id="json-import" class="hidden" accept=".json" onchange="importJSON(event)">
                 </div>
             </div>
             <button onclick="guardarAjustes()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95">Guardar Cambios</button>
@@ -386,13 +390,13 @@
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
                     <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7 a 9 horas | Adolescentes 8 a 10 horas.</p>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos metabólicos. Es vital para la "neuroplasticidad": sin descanso, el cerebro no puede fijar lo aprendido en programación o música.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos. Es vital para fijar lo aprendido.</p>
                     <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[9px] uppercase font-black text-indigo-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente Oficial: NICHD NIH</a>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
                     <h4 class="font-black text-blue-700 dark:text-blue-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo (Deep Work)</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques de 25 a 90 min + 15 min de pausa total.</p>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Forzar más de 90 min de atención analítica agota las reservas de glucosa prefrontal. Las pausas activas permiten que la red neuronal por defecto procese la información.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Forzar más de 90 min agota la glucosa prefrontal. Las pausas permiten procesar la información.</p>
                     <a href="https://pubmed.ncbi.nlm.nih.gov/31725384/" target="_blank" class="text-[9px] uppercase font-black text-blue-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: PubMed NIH - Fatigue Study</a>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
@@ -467,12 +471,14 @@
             <button onclick="toggleTimer()" class="text-slate-400 hover:text-red-500 transition-colors"><i class="fas fa-times-circle text-lg"></i></button>
         </div>
         <div id="timer-display" class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter my-2 tabular-nums">25:00</div>
+        
         <div class="w-full flex justify-around mb-2">
              <button onclick="playFocusSound('rain')" title="Lluvia" class="text-blue-400 hover:scale-110 transition-transform bg-blue-50 dark:bg-blue-900/30 p-2 rounded-full"><i class="fas fa-cloud-showers-heavy"></i></button>
              <button onclick="playFocusSound('forest')" title="Bosque" class="text-emerald-400 hover:scale-110 transition-transform bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-full"><i class="fas fa-tree"></i></button>
              <button onclick="playFocusSound('cafe')" title="Cafetería" class="text-yellow-600 hover:scale-110 transition-transform bg-yellow-50 dark:bg-yellow-900/30 p-2 rounded-full"><i class="fas fa-coffee"></i></button>
              <button onclick="stopFocusSound()" title="Silencio" class="text-slate-400 hover:text-red-400 transition-transform bg-slate-100 dark:bg-slate-700 p-2 rounded-full"><i class="fas fa-volume-mute"></i></button>
         </div>
+
         <div class="flex gap-2 w-full">
             <button id="btn-start-timer" onclick="startTimer()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-black uppercase shadow-md">Iniciar</button>
             <button onclick="resetTimer(25)" class="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white py-2 rounded-xl text-xs font-black uppercase">Foco</button>
@@ -480,6 +486,7 @@
         <button onclick="resetTimer(5)" class="w-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 py-2 rounded-xl text-xs font-black uppercase">Descanso</button>
     </div>
 
+    <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-32 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-[6000] font-black tracking-wide text-[10px] md:text-xs border border-slate-800 dark:border-slate-200">
         <i id="toast-icon" class="fas fa-check-circle text-green-400"></i>
         <span id="toast-message">Mensaje</span>
@@ -504,6 +511,7 @@
         let tempAvatar = userAvatar;
         
         const categoriasDefault = [
+            { id: 'select', nombre: 'Seleccionar', bgClass: 'select-mode', borderClass: 'border-indigo-500', isSpecial: true },
             { id: 'neutral', nombre: 'Texto', bgClass: 'bg-transparent', borderClass: 'border-slate-300', isSpecial: true },
             { id: 'sync', nombre: 'Vincular', bgClass: 'sync-mode', borderClass: 'border-indigo-500', isSpecial: true },
             { id: 'salud', nombre: 'Salud', bgClass: 'bg-emerald-100', borderClass: 'border-emerald-400', isSpecial: false },
@@ -513,7 +521,11 @@
             { id: 'ocio', nombre: 'Ocio', bgClass: 'bg-yellow-100', borderClass: 'border-yellow-400', isSpecial: false },
             { id: 'borrar', nombre: 'Borrador', bgClass: 'bg-white', borderClass: 'border-slate-300', isSpecial: true }
         ];
-        let categorias = []; let colorActivo = ''; let isDragging = false; 
+        
+        let categorias = []; 
+        let colorActivo = ''; 
+        let herramientaActiva = '';
+        let isDragging = false; 
 
         document.addEventListener('DOMContentLoaded', () => {
             inicializarModoOscuro();
@@ -526,7 +538,9 @@
             
             if (!userName) openTutorial(true); else actualizarNombreUI();
 
-            colorActivo = categorias[2].bgClass; // Select first color (Salud) as default instead of text
+            colorActivo = categorias.find(c => c.id === 'salud')?.bgClass || categorias[3].bgClass;
+            herramientaActiva = 'salud';
+
             marcarDiaActual();
             renderizarPaleta();
             renderizarTabla();
@@ -537,23 +551,32 @@
             setInterval(highlightLiveCell, 60000);
             updateLiveClock(); highlightLiveCell();
 
-            window.onmouseup = () => { if(isDragging) { isDragging = false; guardarDatosEnMemoria(); calcularEstadisticas(); checkHealthStreak(); } };
-            window.ontouchend = () => { if(isDragging) { isDragging = false; guardarDatosEnMemoria(); calcularEstadisticas(); checkHealthStreak(); } };
-            
-            window.onkeydown = (e) => {
-                if (e.key === 'Escape') { cerrarModal('modal-ajustes'); cerrarModal('modal-ayuda'); cerrarModal('modal-analisis'); cerrarModal('modal-historial'); cerrarModal('modal-cierre-semanal'); cerrarModal('modal-perfiles'); cerrarModal('modal-avatar'); }
+            const stopDrag = () => { 
+                if(isDragging) { 
+                    isDragging = false; 
+                    guardarDatosEnMemoria(); 
+                    calcularEstadisticas(); 
+                    checkHealthStreak(); 
+                } 
             };
+            window.addEventListener('mouseup', stopDrag);
+            window.addEventListener('touchend', stopDrag);
+            
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { 
+                    cerrarModal('modal-ajustes'); cerrarModal('modal-ayuda'); cerrarModal('modal-analisis'); 
+                    cerrarModal('modal-historial'); cerrarModal('modal-cierre-semanal'); cerrarModal('modal-perfiles'); 
+                    cerrarModal('modal-avatar'); cancelarSeleccion(); 
+                }
+            });
         });
 
         // --- AVATAR SYSTEM ---
         function actualizarAvatarUI() {
             const display = document.getElementById('user-avatar-display');
             if(display) {
-                if(userAvatar.startsWith('data:image')) {
-                    display.innerHTML = `<img src="${userAvatar}" class="w-full h-full object-cover">`;
-                } else {
-                    display.innerHTML = userAvatar;
-                }
+                if(userAvatar.startsWith('data:image')) display.innerHTML = `<img src="${userAvatar}" class="w-full h-full object-cover">`;
+                else display.innerHTML = userAvatar;
             }
         }
 
@@ -566,10 +589,7 @@
                 const isSelected = tempAvatar.includes(icon);
                 btn.className = `w-12 h-12 rounded-2xl flex items-center justify-center text-xl transition-all ${isSelected ? 'bg-indigo-500 text-white shadow-lg scale-110' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'}`;
                 btn.innerHTML = `<i class="fas ${icon}"></i>`;
-                btn.onclick = () => {
-                    tempAvatar = `<i class="fas ${icon} text-xl md:text-2xl text-indigo-300"></i>`;
-                    abrirModalAvatar(); 
-                };
+                btn.onclick = () => { tempAvatar = `<i class="fas ${icon} text-xl md:text-2xl text-indigo-300"></i>`; abrirModalAvatar(); };
                 grid.appendChild(btn);
             });
             document.getElementById('modal-avatar').classList.remove('hidden');
@@ -582,14 +602,11 @@
                 reader.onload = function(e) {
                     const img = new Image();
                     img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        const maxSize = 150;
-                        let width = img.width; let height = img.height;
+                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                        const maxSize = 150; let width = img.width; let height = img.height;
                         if (width > height) { if (width > maxSize) { height *= maxSize / width; width = maxSize; } } 
                         else { if (height > maxSize) { width *= maxSize / height; height = maxSize; } }
-                        canvas.width = width; canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
                         tempAvatar = canvas.toDataURL('image/jpeg', 0.8);
                         abrirModalAvatar();
                         mostrarToast("Foto capturada, presiona Guardar.", "blue");
@@ -602,27 +619,21 @@
         }
 
         function guardarAvatar() {
-            userAvatar = tempAvatar;
-            localStorage.setItem('kairos_avatar', userAvatar);
-            actualizarAvatarUI();
-            cerrarModal('modal-avatar');
-            mostrarToast("Identidad Visual Actualizada");
+            userAvatar = tempAvatar; localStorage.setItem('kairos_avatar', userAvatar);
+            actualizarAvatarUI(); cerrarModal('modal-avatar'); mostrarToast("Identidad Visual Actualizada");
         }
 
         // --- SISTEMA XP ---
         function updateXP() {
-            let level = Math.floor(userXP / 100) + 1;
-            let currentLevelXP = userXP % 100;
+            let level = Math.floor(userXP / 100) + 1; let currentLevelXP = userXP % 100;
             document.getElementById('user-level-display').innerText = level;
             document.getElementById('user-xp-fill').style.width = `${currentLevelXP}%`;
         }
 
         function addXP(amount) {
-            let oldLevel = Math.floor(userXP / 100) + 1;
-            userXP += amount;
+            let oldLevel = Math.floor(userXP / 100) + 1; userXP += amount;
             localStorage.setItem('kairos_xp', userXP);
-            let newLevel = Math.floor(userXP / 100) + 1;
-            updateXP();
+            let newLevel = Math.floor(userXP / 100) + 1; updateXP();
             if(newLevel > oldLevel) mostrarToast(`¡NIVEL UP! Ahora eres nivel ${newLevel} 🎉`);
         }
 
@@ -631,16 +642,9 @@
             try {
                 const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=es&format=json`);
                 const geoData = await geoRes.json();
-                if(geoData.results && geoData.results.length > 0) {
-                    const lat = geoData.results[0].latitude;
-                    const lon = geoData.results[0].longitude;
-                    fetchWeatherByCoords(lat, lon);
-                } else {
-                    document.getElementById('weather-text').innerHTML = `N/A`;
-                }
-            } catch(e) {
-                document.getElementById('weather-text').innerHTML = `N/A`;
-            }
+                if(geoData.results && geoData.results.length > 0) fetchWeatherByCoords(geoData.results[0].latitude, geoData.results[0].longitude);
+                else document.getElementById('weather-text').innerHTML = `N/A`;
+            } catch(e) { document.getElementById('weather-text').innerHTML = `N/A`; }
         }
 
         async function fetchWeatherByCoords(lat, lon) {
@@ -648,17 +652,13 @@
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
                 const data = await res.json();
                 document.getElementById('weather-text').innerHTML = `${data.current_weather.temperature}°C`;
-            } catch(e) {
-                document.getElementById('weather-text').innerHTML = `N/A`;
-            }
+            } catch(e) { document.getElementById('weather-text').innerHTML = `N/A`; }
         }
 
         function loadWeather() {
-            if(userCity) {
-                fetchWeatherByCity(userCity);
-            } else {
-                const fallbackLat = 10.9685; 
-                const fallbackLon = -74.7813;
+            if(userCity) fetchWeatherByCity(userCity);
+            else {
+                const fallbackLat = 10.9685; const fallbackLon = -74.7813;
                 if("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(
                         pos => { fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude); },
@@ -666,15 +666,12 @@
                             try {
                                 const ipRes = await fetch('https://ipapi.co/json/');
                                 const ipData = await ipRes.json();
-                                if(ipData.latitude && ipData.longitude) { fetchWeatherByCoords(ipData.latitude, ipData.longitude); } 
-                                else { fetchWeatherByCoords(fallbackLat, fallbackLon); }
+                                if(ipData.latitude && ipData.longitude) fetchWeatherByCoords(ipData.latitude, ipData.longitude);
+                                else fetchWeatherByCoords(fallbackLat, fallbackLon); 
                             } catch(e) { fetchWeatherByCoords(fallbackLat, fallbackLon); }
-                        },
-                        { timeout: 3000 }
+                        }, { timeout: 3000 }
                     );
-                } else {
-                    fetchWeatherByCoords(fallbackLat, fallbackLon);
-                }
+                } else fetchWeatherByCoords(fallbackLat, fallbackLon);
             }
         }
 
@@ -687,25 +684,49 @@
             }
         }
 
-        // --- MULTI PERFILES Y BACKUPS ---
-        function initProfiles() {
-            const select = document.getElementById('profile-selector');
-            select.innerHTML = '';
-            for(let id in profiles) {
-                let opt = new Option(profiles[id], id);
-                if(id === currentProfile) opt.selected = true;
-                select.add(opt);
+        // --- SELECCIÓN MÚLTIPLE ---
+        function actualizarBarraSeleccion() {
+            const bar = document.getElementById('selection-bar');
+            const count = document.querySelectorAll('.selected-cell').length;
+            const countText = document.getElementById('selection-count');
+            
+            if (count > 0) {
+                if(countText) countText.textContent = `${count} SELECCIONADAS`;
+                if(bar) { bar.classList.remove('translate-y-40', 'opacity-0', 'pointer-events-none'); bar.classList.add('translate-y-0', 'opacity-100'); }
+            } else {
+                if(bar) { bar.classList.add('translate-y-40', 'opacity-0', 'pointer-events-none'); bar.classList.remove('translate-y-0', 'opacity-100'); }
             }
         }
 
+        function borrarSeleccion() {
+            const seleccionadas = document.querySelectorAll('.selected-cell');
+            seleccionadas.forEach(divEdit => {
+                divEdit.innerText = '';
+                divEdit.classList.remove('task-completed');
+                const td = divEdit.parentElement;
+                td.classList.forEach(cls => { if (cls.startsWith('bg-') && !cls.includes('transparent') && !cls.includes('current')) td.classList.remove(cls); });
+                if(!td.classList.contains('current-day-col')) td.classList.add('bg-transparent');
+                divEdit.classList.remove('selected-cell');
+            });
+            actualizarBarraSeleccion(); guardarDatosEnMemoria(); calcularEstadisticas(); checkHealthStreak(); mostrarToast(`Se limpiaron ${seleccionadas.length} casillas`, "blue");
+        }
+
+        function cancelarSeleccion() {
+            document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell'));
+            actualizarBarraSeleccion();
+        }
+
+        // --- MULTI PERFILES Y BACKUPS ---
+        function initProfiles() {
+            const select = document.getElementById('profile-selector'); select.innerHTML = '';
+            for(let id in profiles) { let opt = new Option(profiles[id], id); if(id === currentProfile) opt.selected = true; select.add(opt); }
+        }
+
         function switchProfile(id) {
-            currentProfile = id;
-            localStorage.setItem('kairos_currentProfile', currentProfile);
+            currentProfile = id; localStorage.setItem('kairos_currentProfile', currentProfile);
             storageKey = `horarioPersonalPro_${currentProfile}`;
-            
             document.getElementById('app-title').innerText = profiles[id];
-            
-            renderizarTabla(); cargarHorario(); calcularEstadisticas();
+            cancelarSeleccion(); renderizarTabla(); cargarHorario(); calcularEstadisticas();
             mostrarToast(`Cambiado al perfil: ${profiles[id]}`);
         }
 
@@ -715,8 +736,7 @@
             const val = document.getElementById('new-profile-name').value.trim();
             if(val) {
                 const newId = 'prof_' + new Date().getTime();
-                profiles[newId] = val;
-                localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
+                profiles[newId] = val; localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
                 initProfiles(); switchProfile(newId); cerrarModal('modal-perfiles');
                 document.getElementById('new-profile-name').value = '';
             }
@@ -725,8 +745,7 @@
         function eliminarPerfilActual() {
             if(currentProfile === 'default') { mostrarToast("No puedes eliminar el perfil base", "red"); return; }
             if(confirm("¿Eliminar este horario completo?")) {
-                localStorage.removeItem(storageKey);
-                delete profiles[currentProfile];
+                localStorage.removeItem(storageKey); delete profiles[currentProfile];
                 localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
                 switchProfile('default'); initProfiles(); cerrarModal('modal-perfiles');
             }
@@ -738,26 +757,18 @@
                 try { 
                     const d = JSON.parse(ev.target.result); 
                     const newId = 'prof_imp_' + new Date().getTime();
-                    const profileName = `[Imp] ${d.name || 'Amigo'}`;
-                    
-                    profiles[newId] = profileName;
+                    profiles[newId] = `[Imp] ${d.name || 'Amigo'}`;
                     localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
                     localStorage.setItem(`horarioPersonalPro_${newId}`, d.datos);
                     
-                    if(confirm(`¿Aplicar también colores y horas del backup de ${d.name || 'este archivo'}?\n(Afectará la vista de todos tus perfiles locales)`)) {
+                    if(confirm(`¿Aplicar también colores y horas del backup de ${d.name || 'este archivo'}?\n(Afectará todos tus perfiles locales)`)) {
                         if(d.cats) localStorage.setItem('horarioCategorias', JSON.stringify(d.cats));
                         if(d.hStart !== undefined) localStorage.setItem('horarioHoras', JSON.stringify({inicio:d.hStart, fin:d.hEnd}));
                         if(d.fmt) localStorage.setItem('horarioFormatoHora', d.fmt);
                     }
-                    
-                    switchProfile(newId);
-                    initProfiles();
-                    cerrarModal('modal-perfiles');
-                    mostrarToast("¡Backup importado exitosamente!");
-                    setTimeout(() => location.reload(), 1000);
-                } catch(err) { 
-                    mostrarToast("Archivo Inválido o Corrupto", "red"); 
-                } 
+                    switchProfile(newId); initProfiles(); cerrarModal('modal-perfiles');
+                    mostrarToast("¡Backup importado exitosamente!"); setTimeout(() => location.reload(), 1000);
+                } catch(err) { mostrarToast("Archivo Inválido", "red"); } 
             }; 
             if(e.target.files[0]) r.readAsText(e.target.files[0]); 
             e.target.value = ''; 
@@ -765,7 +776,8 @@
 
         // --- TUTORIAL ---
         function openTutorial(firstTime = false) {
-            document.getElementById('tutorial-modal').classList.remove('hidden');
+            const tut = document.getElementById('tutorial-modal');
+            if(tut) tut.classList.remove('hidden');
             if(firstTime) goToStep(0); else goToStep(1);
         }
 
@@ -775,7 +787,7 @@
             if(target) target.classList.remove('hidden');
             if(n === 1) {
                 const input = document.getElementById('name-input-init');
-                if(input.value.trim() !== '') {
+                if(input && input.value.trim() !== '') {
                     userName = input.value.trim(); localStorage.setItem('kairos_userName', userName); actualizarNombreUI();
                 } else if(!userName) { goToStep(0); return; }
             }
@@ -784,28 +796,20 @@
         function finalizeTutorial() { cerrarModal('tutorial-modal'); mostrarToast(`¡Dashboard Listo, ${userName}!`); }
 
         // --- POMODORO ---
-        function toggleTimer() {
-            const widget = document.getElementById('timer-widget');
-            widget.classList.toggle('hidden');
-            if(!widget.classList.contains('hidden')) widget.classList.add('flex');
-        }
-
+        function toggleTimer() { const widget = document.getElementById('timer-widget'); widget.classList.toggle('hidden'); if(!widget.classList.contains('hidden')) widget.classList.add('flex'); }
         function playFocusSound(type) {
             stopFocusSound();
             const sounds = { 'rain': 'https://www.soundjay.com/nature/rain-01.mp3', 'forest': 'https://www.soundjay.com/nature/forest-wind-01.mp3', 'cafe': 'https://www.soundjay.com/misc/restaurant-01.mp3' };
             currentAudio = new Audio(sounds[type]); currentAudio.loop = true; currentAudio.play().catch(()=>{});
         }
-
         function stopFocusSound() { if(currentAudio) { currentAudio.pause(); currentAudio = null; } }
-
         function startTimer() {
             const btn = document.getElementById('btn-start-timer');
             if (isRunning) { clearInterval(timerInterval); btn.innerText = "Reanudar"; isRunning = false; } 
             else {
                 btn.innerText = "Pausar"; isRunning = true;
                 timerInterval = setInterval(() => {
-                    timeLeft--; 
-                    const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
+                    timeLeft--; const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
                     document.getElementById('timer-display').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
                     if (timeLeft <= 0) {
                         clearInterval(timerInterval); isRunning = false; btn.innerText = "Iniciar";
@@ -815,116 +819,69 @@
                 }, 1000);
             }
         }
-
         function resetTimer(mins) { clearInterval(timerInterval); isRunning = false; timeLeft = mins * 60; document.getElementById('timer-display').innerText = `${mins}:00`; document.getElementById('btn-start-timer').innerText = "Iniciar"; }
-
-        function guardarNombreUsuario() {
-            userName = document.getElementById('display-user-name').innerText.trim() || "Usuario";
-            localStorage.setItem('kairos_userName', userName);
-        }
-
+        
+        function guardarNombreUsuario() { userName = document.getElementById('display-user-name').innerText.trim() || "Usuario"; localStorage.setItem('kairos_userName', userName); }
+        
         function archivarSemana() { document.getElementById('modal-cierre-semanal').classList.remove('hidden'); }
-
         function ejecutarCierreSemanal() {
             let contadores = {}; categorias.forEach(cat => { if(!cat.isSpecial) contadores[cat.bgClass] = 0; });
             document.querySelectorAll('.editable-content').forEach(c => { let bg = null; c.parentElement.classList.forEach(cls => { if(contadores[cls]!==undefined) bg = cls; }); if(bg) contadores[bg] += 0.5; });
-
-            const archive = JSON.parse(localStorage.getItem('kairos_archive') || '[]');
-            archive.push({ fecha: new Date().toLocaleDateString(), titulo: document.getElementById('app-title').innerText, stats: contadores });
+            const archive = JSON.parse(localStorage.getItem('kairos_archive') || '[]'); archive.push({ fecha: new Date().toLocaleDateString(), titulo: document.getElementById('app-title').innerText, stats: contadores });
             localStorage.setItem('kairos_archive', JSON.stringify(archive));
-
-            const clearText = document.getElementById('chk-clear-text').checked;
-            const clearColors = document.getElementById('chk-clear-colors').checked;
-            const clearDone = document.getElementById('chk-clear-done').checked;
-
+            const clearText = document.getElementById('chk-clear-text').checked; const clearColors = document.getElementById('chk-clear-colors').checked; const clearDone = document.getElementById('chk-clear-done').checked;
             document.querySelectorAll('.editable-content').forEach(c => {
                 if(clearText) c.innerText = '';
                 if(clearDone) c.classList.remove('task-completed');
                 if(clearColors) { c.parentElement.classList.forEach(cls => { if(cls.startsWith('bg-') && !cls.includes('current')) c.parentElement.classList.remove(cls); }); }
             });
-
             guardarDatosEnMemoria(); calcularEstadisticas(); cerrarModal('modal-cierre-semanal'); mostrarToast("Semana guardada en historial.");
         }
 
+        // --- SALUD / DIAGNÓSTICO ---
         function checkHealthStreak() {
             let horasPorId = { salud: 0, trabajo: 0, proyectos: 0, estudio: 0, ocio: 0 };
             let mapBgToId = {}; categorias.forEach(cat => mapBgToId[cat.bgClass] = cat.id);
+            document.querySelectorAll('.editable-content').forEach(c => {
+                let bg = null; c.parentElement.classList.forEach(cls => { if (cls.startsWith('bg-') && !cls.includes('transparent') && !cls.includes('current') && !cls.includes('sky') && !cls.includes('indigo') && !cls.includes('orange')) bg = cls; });
+                if(bg) { let id = mapBgToId[bg]; if(id && horasPorId[id] !== undefined) horasPorId[id] += 0.5; }
+            });
+            const carga = horasPorId.trabajo + horasPorId.proyectos + horasPorId.estudio; const ocio = horasPorId.ocio; const salud = horasPorId.salud;
+            let allGreen = (carga <= 45 && carga >= 20) && (ocio >= 12) && (salud >= 3.5);
+            if(allGreen) {
+                document.body.classList.add('gold-theme'); const badge = document.getElementById('gold-badge'); if(badge) badge.classList.remove('hidden');
+                if(!localStorage.getItem('gold_unlocked')) { mostrarToast("🏆 ¡TEMA ORO DESBLOQUEADO!"); localStorage.setItem('gold_unlocked', 'true'); }
+            } else { document.body.classList.remove('gold-theme'); const badge = document.getElementById('gold-badge'); if(badge) badge.classList.add('hidden'); }
+        }
 
+        function obtenerHTMLReporteSalud() {
+            let horasPorId = { salud: 0, trabajo: 0, proyectos: 0, estudio: 0, ocio: 0 }; let mapBgToId = {};
+            categorias.forEach(cat => mapBgToId[cat.bgClass] = cat.id);
             document.querySelectorAll('.editable-content').forEach(c => {
                 let bg = null;
                 c.parentElement.classList.forEach(cls => { if (cls.startsWith('bg-') && !cls.includes('transparent') && !cls.includes('current') && !cls.includes('sky') && !cls.includes('indigo') && !cls.includes('orange')) bg = cls; });
                 if(bg) { let id = mapBgToId[bg]; if(id && horasPorId[id] !== undefined) horasPorId[id] += 0.5; }
             });
-
-            const carga = horasPorId.trabajo + horasPorId.proyectos + horasPorId.estudio;
-            const ocio = horasPorId.ocio; const salud = horasPorId.salud;
-
-            let allGreen = (carga <= 45 && carga >= 20) && (ocio >= 12) && (salud >= 3.5);
-            
-            if(allGreen) {
-                document.body.classList.add('gold-theme');
-                document.getElementById('gold-badge').classList.remove('hidden');
-                if(!localStorage.getItem('gold_unlocked')) {
-                    mostrarToast("🏆 ¡TEMA ORO DESBLOQUEADO! Balance perfecto de salud.");
-                    localStorage.setItem('gold_unlocked', 'true');
-                }
-            } else {
-                document.body.classList.remove('gold-theme');
-                document.getElementById('gold-badge').classList.add('hidden');
-            }
-        }
-
-        function obtenerHTMLReporteSalud() {
-            let horasPorId = { salud: 0, trabajo: 0, proyectos: 0, estudio: 0, ocio: 0 };
-            let mapBgToId = {};
-            categorias.forEach(cat => mapBgToId[cat.bgClass] = cat.id);
-
-            document.querySelectorAll('.editable-content').forEach(c => {
-                let bg = null;
-                c.parentElement.classList.forEach(cls => {
-                    if (cls.startsWith('bg-') && !cls.includes('transparent') && !cls.includes('current') && !cls.includes('sky') && !cls.includes('indigo') && !cls.includes('orange')) {
-                        bg = cls;
-                    }
-                });
-                if(bg) {
-                    let id = mapBgToId[bg];
-                    if(id && horasPorId[id] !== undefined) horasPorId[id] += 0.5;
-                }
-            });
-
-            const cargaCognitiva = horasPorId.trabajo + horasPorId.proyectos + horasPorId.estudio;
-            const horasOcio = horasPorId.ocio;
-            const horasSalud = horasPorId.salud;
-
+            const cargaCognitiva = horasPorId.trabajo + horasPorId.proyectos + horasPorId.estudio; const horasOcio = horasPorId.ocio; const horasSalud = horasPorId.salud;
             let html = "";
-
-            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">`;
-            html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-brain text-indigo-500"></i> Carga Analítica y Cognitiva</h4>`;
-            html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Total carga mental detectada: ${cargaCognitiva} horas semanales</p>`;
-            
-            if (cargaCognitiva > 55) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ RIESGO CRÍTICO DE BURNOUT:</b> Estás superando el umbral de las 55h de alta demanda cognitiva. Los niveles de cortisol crónicamente elevados pueden dañar el hipocampo.</p></div>`; } 
-            else if (cargaCognitiva >= 45) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ ESTADO DE ALTO RENDIMIENTO:</b> Estás en un ritmo de "élite", requiere un sueño de 8-9 horas.</p></div>`; } 
-            else if (cargaCognitiva >= 20) { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ RITMO SALUDABLE:</b> Tu cerebro tiene tiempo suficiente para entrar en "Red Neuronal por Defecto" (descanso activo).</p></div>`; }
+            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break"><h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-brain text-indigo-500"></i> Carga Analítica y Cognitiva</h4><p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Total carga mental detectada: ${cargaCognitiva} horas semanales</p>`;
+            if (cargaCognitiva > 55) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ RIESGO CRÍTICO DE BURNOUT:</b> Estás superando el umbral de las 55h de alta demanda.</p></div>`; } 
+            else if (cargaCognitiva >= 45) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ ESTADO DE ALTO RENDIMIENTO:</b> Requiere un sueño de 8-9 horas.</p></div>`; } 
+            else if (cargaCognitiva >= 20) { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ RITMO SALUDABLE:</b> Tu cerebro tiene tiempo de descanso activo.</p></div>`; }
             else { html += `<div class="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-2xl border border-blue-200 dark:border-blue-800/50"><p class="text-sm font-semibold"><b>ℹ️ CARGA LIGERA:</b> Tienes mucha capacidad libre.</p></div>`; }
-            html += `<a href="https://www.medicalnewstoday.com/articles/cognitive-fatigue" target="_blank" class="text-[10px] uppercase font-black tracking-widest text-indigo-500 underline mt-4 inline-block"><i class="fas fa-link"></i> Ciencia del Foco (Medical News)</a></div>`;
-
-            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break">`;
-            html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-couch text-yellow-500"></i> Recuperación Parasimpática</h4>`;
-            html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Ocio y Desconexión: ${horasOcio} horas semanales</p>`;
-            if (horasOcio < 12) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ DÉFICIT DE RECUPERACIÓN:</b> Tu sistema no tiene tiempo para desactivar el estrés. Recomendamos al menos 12h.</p></div>`; } 
+            html += `</div>`;
+            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break"><h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-couch text-yellow-500"></i> Recuperación Parasimpática</h4><p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Ocio y Desconexión: ${horasOcio} horas semanales</p>`;
+            if (horasOcio < 12) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ DÉFICIT DE RECUPERACIÓN:</b> Tu sistema no tiene tiempo para desactivar el estrés.</p></div>`; } 
             else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ SISTEMA BALANCEADO:</b> Tu cuerpo repara tejidos correctamente.</p></div>`; }
             html += `</div>`;
-
-            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break">`;
-            html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-running text-emerald-500"></i> Salud Metabólica</h4>`;
-            html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Salud / Movimiento: ${horasSalud} horas</p>`;
-            if (horasSalud < 3.5) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ RIESGO DE SEDENTARISMO:</b> Agrega bloques de 15 min de movimiento para "oxigenar" las neuronas.</p></div>`; } 
+            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break"><h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-running text-emerald-500"></i> Salud Metabólica</h4><p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Salud / Movimiento: ${horasSalud} horas</p>`;
+            if (horasSalud < 3.5) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ RIESGO DE SEDENTARISMO:</b> Agrega bloques de 15 min de movimiento.</p></div>`; } 
             else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ ESCUDO METABÓLICO:</b> Mantienes activa la producción de BDNF.</p></div>`; }
             html += `</div>`;
-
             return html;
         }
 
+        // --- HISTORIAL ---
         function abrirModalHistorial() {
             const container = document.getElementById('historial-contenido');
             const archive = JSON.parse(localStorage.getItem('kairos_archive') || '[]');
@@ -949,11 +906,11 @@
         }
 
         // --- CORE MAIN ---
-        function actualizarNombreUI() { document.getElementById('display-user-name').innerText = userName; }
+        function actualizarNombreUI() { const el = document.getElementById('display-user-name'); if(el) el.innerText = userName; }
         function updateLiveClock() {
             const n = new Date();
-            document.getElementById('live-clock').innerText = n.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
-            document.getElementById('live-date').innerText = n.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+            const clk = document.getElementById('live-clock'); if(clk) clk.innerText = n.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
+            const dte = document.getElementById('live-date'); if(dte) dte.innerText = n.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
         }
         function highlightLiveCell() {
             document.querySelectorAll('.live-cell').forEach(el => el.classList.remove('live-cell'));
@@ -967,20 +924,21 @@
             const p = document.getElementById('color-palette'); p.innerHTML = '';
             categorias.forEach(cat => {
                 const btn = document.createElement('button');
-                btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border-2 transition-all ${cat.bgClass} ${cat.bgClass === colorActivo ? cat.borderClass + ' scale-110 shadow-md' : 'border-transparent'}`;
+                btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border-2 transition-all ${cat.bgClass} ${cat.id === herramientaActiva ? cat.borderClass + ' scale-110 shadow-md' : 'border-transparent'}`;
                 
-                let circleColor = '';
+                let circleColor = ''; let iconHtml = '';
                 if(cat.id === 'borrar' || cat.id === 'neutral') circleColor = 'bg-white border border-slate-300';
-                else if(cat.id === 'sync') circleColor = 'bg-indigo-500';
+                else if(cat.id === 'sync') { circleColor = 'bg-indigo-500 flex items-center justify-center'; iconHtml = '<i class="fas fa-link text-[6px] text-white"></i>'; }
+                else if(cat.id === 'select') { circleColor = 'bg-indigo-100 border border-indigo-400 flex items-center justify-center'; iconHtml = '<i class="fas fa-mouse-pointer text-[6px] text-indigo-600"></i>'; }
                 else circleColor = cat.bgClass.replace('100','400');
                 
-                btn.innerHTML = `<div class="w-2.5 h-2.5 rounded-full ${circleColor} flex items-center justify-center">${cat.id === 'sync' ? '<i class="fas fa-link text-[6px] text-white"></i>' : ''}</div>${cat.nombre}`;
+                btn.innerHTML = `<div class="w-2.5 h-2.5 rounded-full ${circleColor} flex items-center justify-center">${iconHtml}</div>${cat.nombre}`;
                 
                 btn.onclick = () => { 
-                    colorActivo = cat.bgClass; 
-                    renderizarPaleta(); 
+                    colorActivo = cat.bgClass; herramientaActiva = cat.id; renderizarPaleta(); 
                     if(cat.id === 'sync') mostrarToast("Vincular: Arrastra para agrupar días.", "blue");
-                    else document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active'));
+                    else if(cat.id === 'select') mostrarToast("Seleccionar: Arrastra para marcar casillas.", "blue");
+                    else { document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active')); cancelarSeleccion(); }
                 };
                 p.appendChild(btn);
             });
@@ -1013,51 +971,51 @@
                                 if(document.getElementById('timer-widget').classList.contains('hidden')) toggleTimer();
                                 startTimer();
                             }
-                            
-                            // Lógica VINCULAR (Sincronizar Textos)
                             if(edit.classList.contains('sync-active')) {
-                                const txt = edit.innerText;
-                                document.querySelectorAll('.sync-active').forEach(el => {
-                                    if(el !== edit) el.innerText = txt;
-                                });
+                                const txt = edit.innerText; document.querySelectorAll('.sync-active').forEach(el => { if(el !== edit) el.innerText = txt; });
                             }
                         };
                         
                         edit.onmousedown = (e) => { 
-                            if(colorActivo === 'sync-mode') {
-                                isDragging = true;
-                                if(!edit.classList.contains('sync-active')) {
-                                    document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active'));
-                                    edit.classList.add('sync-active');
-                                    e.preventDefault(); 
-                                    edit.focus();
-                                }
+                            if (herramientaActiva === 'select') {
+                                isDragging = true; edit.classList.toggle('selected-cell'); actualizarBarraSeleccion(); e.preventDefault(); edit.focus();
                             }
-                            else if(colorActivo !== 'bg-transparent'){ 
+                            else if(herramientaActiva === 'sync') {
+                                isDragging = true;
+                                if(!edit.classList.contains('sync-active')) { document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active')); edit.classList.add('sync-active'); e.preventDefault(); edit.focus(); }
+                            }
+                            else if(colorActivo !== 'bg-transparent' || herramientaActiva === 'borrar'){ 
                                 isDragging=true; paintCell(td); e.preventDefault(); edit.focus(); 
                             } 
                         };
                         
                         edit.onmouseenter = () => { 
                             if(isDragging) {
-                                if(colorActivo === 'sync-mode') {
-                                    edit.classList.add('sync-active');
-                                } else if(colorActivo !== 'bg-transparent') {
-                                    paintCell(td); 
-                                }
+                                if(herramientaActiva === 'select') { edit.classList.add('selected-cell'); actualizarBarraSeleccion(); }
+                                else if(herramientaActiva === 'sync') { edit.classList.add('sync-active'); } 
+                                else if(colorActivo !== 'bg-transparent' || herramientaActiva === 'borrar') { paintCell(td); }
                             }
                         };
+
+                        edit.addEventListener('touchstart', (e) => {
+                            if (herramientaActiva === 'select') { isDragging = true; edit.classList.toggle('selected-cell'); actualizarBarraSeleccion(); } 
+                            else if (herramientaActiva === 'sync') { isDragging = true; if(!edit.classList.contains('sync-active')) { document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active')); edit.classList.add('sync-active'); } } 
+                            else if (colorActivo !== 'bg-transparent' || herramientaActiva === 'borrar') { isDragging = true; paintCell(td); }
+                        }, {passive: true});
+
+                        edit.addEventListener('touchmove', (e) => {
+                            if (isDragging) {
+                                const touch = e.touches[0]; const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                                if (target && target.classList.contains('editable-content')) {
+                                    if (herramientaActiva === 'select') { target.classList.add('selected-cell'); actualizarBarraSeleccion(); } 
+                                    else if (herramientaActiva === 'sync') { target.classList.add('sync-active'); } 
+                                    else { paintCell(target.parentElement); }
+                                }
+                            }
+                        }, {passive: true});
                         
                         edit.onblur = () => { guardarDatosEnMemoria(); calcularEstadisticas(); };
-                        
-                        edit.ondblclick = () => { 
-                            if(edit.innerText.trim()){ 
-                                edit.classList.toggle('task-completed'); 
-                                if(edit.classList.contains('task-completed')) addXP(10);
-                                guardarDatosEnMemoria(); 
-                            } 
-                        };
-                        
+                        edit.ondblclick = () => { if(edit.innerText.trim()){ edit.classList.toggle('task-completed'); if(edit.classList.contains('task-completed')) addXP(10); guardarDatosEnMemoria(); } };
                         td.appendChild(edit); tr.appendChild(td);
                     });
                     body.appendChild(tr);
@@ -1067,8 +1025,13 @@
 
         function paintCell(td) {
             td.classList.forEach(c => { if(c.startsWith('bg-') && !c.includes('transparent')) td.classList.remove(c); });
-            if(colorActivo === 'bg-white') td.classList.add('bg-transparent'); 
-            else if(colorActivo !== 'sync-mode') td.classList.add(colorActivo);
+            if (herramientaActiva === 'borrar') {
+                if(!td.classList.contains('current-day-col')) td.classList.add('bg-transparent');
+                const divEdit = td.querySelector('.editable-content');
+                if(divEdit) { divEdit.innerText = ''; divEdit.classList.remove('task-completed'); }
+            } 
+            else if (herramientaActiva === 'neutral') { if(!td.classList.contains('current-day-col')) td.classList.add('bg-transparent'); } 
+            else if (herramientaActiva !== 'sync' && herramientaActiva !== 'select') { td.classList.add(colorActivo); }
         }
 
         function guardarDatosEnMemoria() {
@@ -1128,29 +1091,35 @@
         function inicializarModoOscuro() { if(localStorage.getItem('theme')==='dark') document.documentElement.classList.add('dark'); }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light'); }
         function cargarConfiguracionAjustes() {
-            const c = localStorage.getItem('horarioCategorias'); if(c) categorias = JSON.parse(c); else categorias = JSON.parse(JSON.stringify(categoriasDefault));
+            const c = localStorage.getItem('horarioCategorias'); 
+            if(c) {
+                categorias = JSON.parse(c); 
+                if(!categorias.find(x => x.id === 'select')) {
+                    categorias.splice(0, 0, { id: 'select', nombre: 'Seleccionar', bgClass: 'select-mode', borderClass: 'border-indigo-500', isSpecial: true });
+                }
+            } else { categorias = JSON.parse(JSON.stringify(categoriasDefault)); }
+            
             const h = localStorage.getItem('horarioHoras'); if(h){ const o = JSON.parse(h); horaInicio=o.inicio; horaFin=o.fin; }
             formatoHora = localStorage.getItem('horarioFormatoHora') || '24h';
             userCity = localStorage.getItem('kairos_city') || '';
         }
-        function cargarTitulo() { 
-            if(profiles[currentProfile]) {
-                document.getElementById('app-title').innerText = profiles[currentProfile]; 
-            }
-        }
-        function guardarTitulo() { 
-            const newTitle = document.getElementById('app-title').innerText.trim();
-            if(newTitle) {
-                profiles[currentProfile] = newTitle;
-                localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
-                initProfiles();
-            }
-        }
+        function cargarTitulo() { const el = document.getElementById('app-title'); if(el && profiles[currentProfile]) { el.innerText = profiles[currentProfile]; } }
+        function guardarTitulo() { const el = document.getElementById('app-title'); if(el) { const newTitle = el.innerText.trim(); if(newTitle) { profiles[currentProfile] = newTitle; localStorage.setItem('kairos_profiles', JSON.stringify(profiles)); initProfiles(); } } }
         function marcarDiaActual() { window.currentDayIndex = (new Date().getDay() + 6) % 7; }
-        function cerrarModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
+        function cerrarModal(id) { 
+            const el = document.getElementById(id);
+            if(el) el.classList.add('hidden'); 
+        }
+
         function mostrarToast(m, c='green') {
-            const t = document.getElementById('toast'); document.getElementById('toast-message').innerText = m;
-            t.classList.remove('translate-y-32', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000);
+            const t = document.getElementById('toast'); 
+            const msg = document.getElementById('toast-message');
+            if(msg) msg.innerText = m;
+            if(t) {
+                t.classList.remove('translate-y-32', 'opacity-0'); 
+                setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000);
+            }
         }
 
         function rellenarDescansos() {
@@ -1164,6 +1133,7 @@
         }
 
         function exportarPDF() {
+            cancelarSeleccion();
             mostrarToast("Compilando Reporte Élite...", "blue"); window.scrollTo(0,0);
             const overlay = document.createElement('div'); 
             overlay.className = "fixed inset-0 bg-white z-[99999] flex items-center justify-center flex-col font-black text-slate-800 text-center"; 
@@ -1227,10 +1197,11 @@
         }
         function abrirModalAyuda() { document.getElementById('modal-ayuda').classList.remove('hidden'); }
         function generarReporteSalud(m) { 
-            document.getElementById('reporte-contenido').innerHTML = obtenerHTMLReporteSalud();
+            const rep = document.getElementById('reporte-contenido');
+            if(rep) rep.innerHTML = obtenerHTMLReporteSalud();
             document.getElementById('modal-analisis').classList.remove('hidden'); 
         }
-        function confirmarLimpiar() { if(confirm("¿BORRAR TODO EL PERFIL ACTUAL?")) { localStorage.removeItem(storageKey); location.reload(); } }
+        function confirmarLimpiar() { if(confirm("¿BORRAR TODO EL PERFIL ACTUAL? Se perderán las actividades actuales.")) { localStorage.removeItem(storageKey); location.reload(); } }
     </script>
 </body>
 </html>
