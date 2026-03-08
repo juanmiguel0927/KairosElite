@@ -71,7 +71,6 @@
         .mobile-modal-anim { animation: slideUp 0.3s ease-out forwards; }
         @media (min-width: 640px) { .mobile-modal-anim { animation: none; } }
         
-        /* App Badge Branding */
         .app-branding-container { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
         .app-badge {
             background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
@@ -80,17 +79,14 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px;
         }
 
-        /* Progreso Nivel XP */
         .xp-bar-bg { background-color: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; overflow: hidden; margin-top: 4px; width: 100px; }
         .xp-bar-fill { height: 100%; transition: width 0.4s ease; background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
 
-        /* ZEN MODE */
         body.zen-mode .glass-header, body.zen-mode .toolbar-section, body.zen-mode #stats-container, body.zen-mode footer { display: none !important; }
         body.zen-mode #app-container { margin-top: 2rem; }
         body.zen-mode #zen-exit-btn { display: flex !important; }
         #zen-exit-btn { display: none; }
 
-        /* GOLD THEME (Salud Perfecta) */
         body.gold-theme .glass-header { background: linear-gradient(135deg, #451a03 0%, #b45309 100%); }
         body.gold-theme .app-badge { background: linear-gradient(90deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); border-color: rgba(251, 191, 36, 0.4); color: #fde047; }
     </style>
@@ -157,16 +153,23 @@
                     </div>
                     <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20 shadow-inner">
                         <i class="fas fa-cloud text-indigo-200"></i>
-                        <span id="weather-text" class="text-xs font-bold font-mono">--°C</span>
+                        <span id="weather-text" class="text-xs font-bold font-mono" title="Puedes cambiar la ciudad en los Ajustes">Cargando...</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div class="flex items-start gap-4 w-full md:w-auto">
-                    <div class="w-12 h-12 md:w-14 md:h-14 bg-white/10 rounded-2xl flex shrink-0 items-center justify-center border border-white/20 backdrop-blur-md shadow-inner mt-1">
-                        <i class="fas fa-user-astronaut text-xl md:text-2xl text-indigo-300"></i>
+                    <!-- AVATAR EDITABLE (NUEVO) -->
+                    <div onclick="abrirModalAvatar()" class="w-12 h-12 md:w-14 md:h-14 bg-white/10 rounded-2xl flex shrink-0 items-center justify-center border border-white/20 backdrop-blur-md shadow-inner mt-1 cursor-pointer hover:bg-white/20 transition-all overflow-hidden relative group" title="Cambiar Avatar">
+                        <div id="user-avatar-display" class="w-full h-full flex items-center justify-center">
+                            <!-- Se llena por JS -->
+                        </div>
+                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-camera text-white text-sm"></i>
+                        </div>
                     </div>
+                    
                     <div class="flex-1 min-w-0">
                         <p class="text-[9px] md:text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                             Hola, <span id="display-user-name" contenteditable="true" onblur="guardarNombreUsuario()" class="truncate cursor-edit">Usuario</span> <i class="fas fa-pen-nib text-[8px] opacity-40"></i>
@@ -221,7 +224,6 @@
 
     <!-- ÁREA PRINCIPAL -->
     <div id="app-container" class="max-w-7xl mx-auto px-4 md:px-8">
-        <!-- Herramientas -->
         <div class="toolbar-section bg-white dark:bg-slate-800 p-3 md:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-5 flex flex-col md:flex-row gap-4 items-center justify-between">
             <div class="flex flex-wrap gap-2 items-center w-full md:w-auto">
                 <span class="font-black text-[10px] text-slate-400 uppercase tracking-widest mr-1">Pinceles:</span>
@@ -243,7 +245,6 @@
             </div>
         </div>
 
-        <!-- Tabla de Horarios -->
         <div id="contenedor-horario" class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
             <div class="overflow-x-auto no-scrollbar">
                 <table class="w-full min-w-[800px] border-collapse" id="schedule-table">
@@ -257,14 +258,39 @@
             </div>
         </div>
 
-        <!-- Estadísticas Analíticas -->
         <div id="stats-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-12"></div>
 
         <footer class="text-center py-10 border-t border-slate-200 dark:border-slate-800 opacity-60">
             <p class="text-[9px] font-black uppercase tracking-[0.4em] mb-1 italic text-indigo-500">Desarrollado por</p>
             <p class="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white">Juan Miguel Rios Redondo</p>
-            <p class="text-[8px] mt-4 font-bold text-slate-400">© 2025 Kairós Master Elite - Todos los derechos reservados.</p>
+            <p class="text-[8px] mt-4 font-bold text-slate-400">© 2026 Kairós Master Elite - Todos los derechos reservados.</p>
         </footer>
+    </div>
+
+    <!-- MODAL AVATAR (NUEVO) -->
+    <div id="modal-avatar" class="fixed inset-0 z-[6000] modal-overlay hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 max-w-sm w-full rounded-[2rem] p-6 text-center shadow-2xl border border-slate-700 mobile-modal-anim">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
+                <h3 class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Estudio de Avatar</h3>
+                <button onclick="cerrarModal('modal-avatar')"><i class="fas fa-times-circle text-slate-300 text-2xl hover:text-red-500 transition-colors"></i></button>
+            </div>
+            
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 font-black">1. Sube tu propia foto</p>
+            
+            <label class="block w-full bg-indigo-50 dark:bg-indigo-900/20 border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-xl p-4 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors mb-6">
+                <i class="fas fa-camera-retro text-indigo-500 text-2xl mb-2"></i>
+                <span class="block text-xs font-bold text-indigo-700 dark:text-indigo-400">Seleccionar Imagen</span>
+                <input type="file" id="avatar-upload" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
+            </label>
+
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 font-black">2. O elige un icono Élite</p>
+
+            <div class="grid grid-cols-5 gap-2 mb-6" id="avatar-icon-grid">
+                <!-- Se inyecta por JS -->
+            </div>
+            
+            <button onclick="guardarAvatar()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-black uppercase text-xs shadow-md hover:bg-indigo-700 active:scale-95 transition-transform">Guardar Mi Identidad</button>
+        </div>
     </div>
 
     <!-- MODAL CIERRE SEMANAL -->
@@ -344,12 +370,12 @@
         </div>
     </div>
 
-    <!-- MODAL AJUSTES -->
+    <!-- MODAL AJUSTES (CON CIUDAD) -->
     <div id="modal-ajustes" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-8 w-full max-w-lg shadow-2xl h-auto max-h-[90vh] flex flex-col border border-slate-700 mobile-modal-anim">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Ajustes del Sistema</h3>
-                <button onclick="cerrarModal('modal-ajustes')"><i class="fas fa-times-circle text-slate-300 text-3xl"></i></button>
+                <button onclick="cerrarModal('modal-ajustes')"><i class="fas fa-times-circle text-slate-300 text-3xl hover:text-red-500 transition-colors"></i></button>
             </div>
             <div class="overflow-y-auto no-scrollbar space-y-6 flex-1 pb-6">
                 <div class="grid grid-cols-2 gap-4">
@@ -361,7 +387,15 @@
                         <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Día Termina</label>
                         <select id="select-hora-fin" class="w-full bg-transparent text-sm font-black outline-none dark:text-white"></select>
                     </div>
+                    
+                    <!-- Nueva Opción de Ciudad -->
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 col-span-2">
+                        <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Ciudad (Para el Clima)</label>
+                        <input type="text" id="input-ciudad" class="w-full bg-transparent text-sm font-black outline-none dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1" placeholder="Ej. Madrid, Bogotá, Miami...">
+                        <p class="text-[8px] text-slate-400 mt-1">Escribe tu ciudad para forzar el widget de clima si falla la ubicación.</p>
+                    </div>
                 </div>
+                
                 <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-800">
                     <label class="block text-[9px] font-black uppercase text-indigo-500 mb-1">Visualización Hora</label>
                     <select id="select-formato-hora" class="w-full bg-transparent text-sm font-black outline-none text-indigo-900 dark:text-indigo-200">
@@ -392,7 +426,7 @@
                     <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7 a 9 horas | Adolescentes 8 a 10 horas.</p>
                     <p class="text-xs text-slate-500 mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos. Es vital para fijar lo aprendido.</p>
-                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[9px] uppercase font-black text-indigo-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: NICHD NIH</a>
+                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[9px] uppercase font-black text-indigo-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente Oficial: NICHD NIH</a>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
                     <h4 class="font-black text-blue-700 dark:text-blue-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo</h4>
@@ -436,14 +470,18 @@
         const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
         let horaInicio = 6; let horaFin = 23; let formatoHora = '24h'; let isDarkMode = false;
         let userName = localStorage.getItem('kairos_userName') || '';
+        let userCity = localStorage.getItem('kairos_city') || '';
         
         let timerInterval; let timeLeft = 25 * 60; let isRunning = false; let currentAudio = null;
-        
         let userXP = parseInt(localStorage.getItem('kairos_xp')) || 0;
-        
         let profiles = JSON.parse(localStorage.getItem('kairos_profiles')) || { 'default': 'Rutina Normal' };
         let currentProfile = localStorage.getItem('kairos_currentProfile') || 'default';
         let storageKey = `horarioPersonalPro_${currentProfile}`;
+        
+        // Avatar Logic
+        let userAvatar = localStorage.getItem('kairos_avatar') || '<i class="fas fa-user-astronaut text-xl md:text-2xl text-indigo-300"></i>';
+        const presetIcons = ['fa-user-astronaut', 'fa-user-ninja', 'fa-user-secret', 'fa-user-tie', 'fa-user-graduate', 'fa-female', 'fa-user', 'fa-crown', 'fa-gem', 'fa-fire', 'fa-cat', 'fa-dog', 'fa-dragon', 'fa-ghost', 'fa-robot'];
+        let tempAvatar = userAvatar;
         
         const categoriasDefault = [
             { id: 'neutral', nombre: 'Texto', bgClass: 'bg-transparent', borderClass: 'border-slate-300', isSpecial: true },
@@ -461,6 +499,7 @@
             cargarConfiguracionAjustes();
             cargarTitulo();
             initProfiles();
+            actualizarAvatarUI();
             loadWeather();
             updateXP();
             
@@ -481,11 +520,74 @@
             window.ontouchend = () => { if(isDragging) { isDragging = false; guardarDatosEnMemoria(); calcularEstadisticas(); checkHealthStreak(); } };
             
             window.onkeydown = (e) => {
-                if (e.key === 'Escape') { cerrarModal('modal-ajustes'); cerrarModal('modal-ayuda'); cerrarModal('modal-analisis'); cerrarModal('modal-historial'); cerrarModal('modal-cierre-semanal'); cerrarModal('modal-perfiles'); }
+                if (e.key === 'Escape') { cerrarModal('modal-ajustes'); cerrarModal('modal-ayuda'); cerrarModal('modal-analisis'); cerrarModal('modal-historial'); cerrarModal('modal-cierre-semanal'); cerrarModal('modal-perfiles'); cerrarModal('modal-avatar'); }
             };
         });
 
-        // --- SISTEMA XP Y NIVELES ---
+        // --- AVATAR SYSTEM ---
+        function actualizarAvatarUI() {
+            const display = document.getElementById('user-avatar-display');
+            if(display) {
+                if(userAvatar.startsWith('data:image')) {
+                    display.innerHTML = `<img src="${userAvatar}" class="w-full h-full object-cover">`;
+                } else {
+                    display.innerHTML = userAvatar;
+                }
+            }
+        }
+
+        function abrirModalAvatar() {
+            tempAvatar = userAvatar;
+            const grid = document.getElementById('avatar-icon-grid');
+            grid.innerHTML = '';
+            presetIcons.forEach(icon => {
+                const btn = document.createElement('button');
+                const isSelected = tempAvatar.includes(icon);
+                btn.className = `w-12 h-12 rounded-2xl flex items-center justify-center text-xl transition-all ${isSelected ? 'bg-indigo-500 text-white shadow-lg scale-110' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'}`;
+                btn.innerHTML = `<i class="fas ${icon}"></i>`;
+                btn.onclick = () => {
+                    tempAvatar = `<i class="fas ${icon} text-xl md:text-2xl text-indigo-300"></i>`;
+                    abrirModalAvatar(); // re-render to show selection
+                };
+                grid.appendChild(btn);
+            });
+            document.getElementById('modal-avatar').classList.remove('hidden');
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxSize = 150;
+                        let width = img.width; let height = img.height;
+                        if (width > height) { if (width > maxSize) { height *= maxSize / width; width = maxSize; } } 
+                        else { if (height > maxSize) { width *= maxSize / height; height = maxSize; } }
+                        canvas.width = width; canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        tempAvatar = canvas.toDataURL('image/jpeg', 0.8);
+                        abrirModalAvatar();
+                        mostrarToast("Foto lista, presiona Guardar.", "blue");
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function guardarAvatar() {
+            userAvatar = tempAvatar;
+            localStorage.setItem('kairos_avatar', userAvatar);
+            actualizarAvatarUI();
+            cerrarModal('modal-avatar');
+            mostrarToast("Identidad Visual Actualizada");
+        }
+
+        // --- SISTEMA XP ---
         function updateXP() {
             let level = Math.floor(userXP / 100) + 1;
             let currentLevelXP = userXP % 100;
@@ -502,16 +604,55 @@
             if(newLevel > oldLevel) mostrarToast(`¡NIVEL UP! Ahora eres nivel ${newLevel} 🎉`);
         }
 
-        // --- CLIMA ---
+        // --- CLIMA CON FALLBACK MANUAL/GEO/IP ---
+        async function fetchWeatherByCity(city) {
+            try {
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=es&format=json`);
+                const geoData = await geoRes.json();
+                if(geoData.results && geoData.results.length > 0) {
+                    const lat = geoData.results[0].latitude;
+                    const lon = geoData.results[0].longitude;
+                    fetchWeatherByCoords(lat, lon);
+                } else {
+                    document.getElementById('weather-text').innerHTML = `N/A`;
+                }
+            } catch(e) {
+                document.getElementById('weather-text').innerHTML = `N/A`;
+            }
+        }
+
+        async function fetchWeatherByCoords(lat, lon) {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const data = await res.json();
+                document.getElementById('weather-text').innerHTML = `${data.current_weather.temperature}°C`;
+            } catch(e) {
+                document.getElementById('weather-text').innerHTML = `N/A`;
+            }
+        }
+
         function loadWeather() {
-            if("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(async pos => {
-                    try {
-                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`);
-                        const data = await res.json();
-                        document.getElementById('weather-text').innerHTML = `${data.current_weather.temperature}°C`;
-                    } catch(e) {}
-                }, () => { document.getElementById('weather-text').innerHTML = `Clima N/A`; });
+            if(userCity) {
+                fetchWeatherByCity(userCity);
+            } else {
+                const fallbackLat = 10.9685; // Barranquilla
+                const fallbackLon = -74.7813;
+                if("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => { fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude); },
+                        async () => { 
+                            try {
+                                const ipRes = await fetch('https://ipapi.co/json/');
+                                const ipData = await ipRes.json();
+                                if(ipData.latitude && ipData.longitude) { fetchWeatherByCoords(ipData.latitude, ipData.longitude); } 
+                                else { fetchWeatherByCoords(fallbackLat, fallbackLon); }
+                            } catch(e) { fetchWeatherByCoords(fallbackLat, fallbackLon); }
+                        },
+                        { timeout: 3000 }
+                    );
+                } else {
+                    fetchWeatherByCoords(fallbackLat, fallbackLon);
+                }
             }
         }
 
@@ -539,9 +680,7 @@
             currentProfile = id;
             localStorage.setItem('kairos_currentProfile', currentProfile);
             storageKey = `horarioPersonalPro_${currentProfile}`;
-            renderizarTabla();
-            cargarHorario();
-            calcularEstadisticas();
+            renderizarTabla(); cargarHorario(); calcularEstadisticas();
             mostrarToast(`Cambiado al perfil: ${profiles[id]}`);
         }
 
@@ -553,9 +692,7 @@
                 const newId = 'prof_' + new Date().getTime();
                 profiles[newId] = val;
                 localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
-                initProfiles();
-                switchProfile(newId);
-                cerrarModal('modal-perfiles');
+                initProfiles(); switchProfile(newId); cerrarModal('modal-perfiles');
                 document.getElementById('new-profile-name').value = '';
             }
         }
@@ -566,9 +703,7 @@
                 localStorage.removeItem(storageKey);
                 delete profiles[currentProfile];
                 localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
-                switchProfile('default');
-                initProfiles();
-                cerrarModal('modal-perfiles');
+                switchProfile('default'); initProfiles(); cerrarModal('modal-perfiles');
             }
         }
 
@@ -655,7 +790,6 @@
             guardarDatosEnMemoria(); calcularEstadisticas(); cerrarModal('modal-cierre-semanal'); mostrarToast("Semana guardada en historial.");
         }
 
-        // --- DIAGNÓSTICO Y TEMA ORO ---
         function checkHealthStreak() {
             let horasPorId = { salud: 0, trabajo: 0, proyectos: 0, estudio: 0, ocio: 0 };
             let mapBgToId = {}; categorias.forEach(cat => mapBgToId[cat.bgClass] = cat.id);
@@ -761,7 +895,7 @@
             const archive = JSON.parse(localStorage.getItem('kairos_archive') || '[]'); archive.splice(idx, 1); localStorage.setItem('kairos_archive', JSON.stringify(archive)); abrirModalHistorial();
         }
 
-        // --- CORE CORE CORE ---
+        // --- CORE ---
         function actualizarNombreUI() { document.getElementById('display-user-name').innerText = userName; }
         function updateLiveClock() {
             const n = new Date();
@@ -898,6 +1032,7 @@
             const c = localStorage.getItem('horarioCategorias'); if(c) categorias = JSON.parse(c); else categorias = JSON.parse(JSON.stringify(categoriasDefault));
             const h = localStorage.getItem('horarioHoras'); if(h){ const o = JSON.parse(h); horaInicio=o.inicio; horaFin=o.fin; }
             formatoHora = localStorage.getItem('horarioFormatoHora') || '24h';
+            userCity = localStorage.getItem('kairos_city') || '';
         }
         function cargarTitulo() { const t = localStorage.getItem('horarioTitulo'); if(t) document.getElementById('app-title').innerText = t; }
         function guardarTitulo() { localStorage.setItem('horarioTitulo', document.getElementById('app-title').innerText); }
@@ -962,6 +1097,8 @@
                 sI.add(new Option(opt, i)); sF.add(new Option(opt, i));
             }
             sI.value = horaInicio; sF.value = horaFin;
+            document.getElementById('input-ciudad').value = userCity;
+            
             const list = document.getElementById('categorias-edit-list'); list.innerHTML = '';
             categorias.forEach((cat, i) => { if(cat.isSpecial) return; list.innerHTML += `<div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl"><div class="w-4 h-4 rounded-full ${cat.bgClass.replace('100','400')}"></div><input type="text" id="cat-in-${i}" value="${cat.nombre}" class="bg-transparent outline-none font-bold text-xs dark:text-white flex-1"></div>`; });
             document.getElementById('modal-ajustes').classList.remove('hidden');
@@ -970,6 +1107,9 @@
             horaInicio = parseInt(document.getElementById('select-hora-inicio').value);
             horaFin = parseInt(document.getElementById('select-hora-fin').value);
             formatoHora = document.getElementById('select-formato-hora').value;
+            userCity = document.getElementById('input-ciudad').value.trim();
+            localStorage.setItem('kairos_city', userCity);
+            
             categorias.forEach((cat, i) => { if(!cat.isSpecial){ const val = document.getElementById(`cat-in-${i}`).value; if(val) cat.nombre = val; } });
             localStorage.setItem('horarioHoras', JSON.stringify({inicio:horaInicio, fin:horaFin}));
             localStorage.setItem('horarioFormatoHora', formatoHora);
