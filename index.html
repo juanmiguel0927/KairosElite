@@ -70,6 +70,29 @@
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .mobile-modal-anim { animation: slideUp 0.3s ease-out forwards; }
         @media (min-width: 640px) { .mobile-modal-anim { animation: none; } }
+        
+        /* App Badge Branding */
+        .app-branding-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .app-badge {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #ffffff;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 pb-20">
@@ -114,6 +137,14 @@
     <!-- UI HEADER -->
     <header class="glass-header text-white p-5 md:p-8 rounded-b-[2.5rem] shadow-2xl mb-6 relative z-20" id="main-header">
         <div class="max-w-7xl mx-auto">
+            <!-- Branding Tag ELEGANTE -->
+            <div class="app-branding-container">
+                <div class="app-badge">
+                    <i class="fas fa-bolt text-yellow-400 animate-pulse"></i>
+                    KAIRÓS ELITE PRO
+                </div>
+            </div>
+
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div class="flex items-center gap-4 w-full md:w-auto">
                     <div class="w-12 h-12 md:w-14 md:h-14 bg-white/10 rounded-2xl flex shrink-0 items-center justify-center border border-white/20 backdrop-blur-md shadow-inner">
@@ -123,7 +154,7 @@
                         <p class="text-[9px] md:text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                             Hola, <span id="display-user-name" contenteditable="true" onblur="guardarNombreUsuario()" class="truncate cursor-edit">Usuario</span> <i class="fas fa-pen-nib text-[8px] opacity-40"></i>
                         </p>
-                        <h1 id="app-title" contenteditable="true" data-placeholder="Nombre..." class="text-xl md:text-3xl font-black tracking-tight truncate w-full" onblur="guardarTitulo()">Mi Horario Semanal</h1>
+                        <h1 id="app-title" contenteditable="true" data-placeholder="Nombre del Plan..." class="text-xl md:text-3xl font-black tracking-tight truncate w-full" onblur="guardarTitulo()">Mi Horario Semanal</h1>
                     </div>
                 </div>
 
@@ -142,11 +173,14 @@
                         <button onclick="abrirModalHistorial()" class="p-3 bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 rounded-xl border border-blue-500/30 transition-all active:scale-90" title="Historial Semanal">
                             <i class="fas fa-history"></i>
                         </button>
-                        <button onclick="openTutorial(false)" class="p-3 bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 rounded-xl border border-indigo-500/30 transition-all active:scale-90" title="Tutorial">
+                        <button onclick="openTutorial(false)" class="p-3 bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 rounded-xl border border-indigo-500/30 transition-all active:scale-90" title="Ayuda / Tutorial">
                             <i class="fas fa-question-circle"></i>
                         </button>
                         <button onclick="abrirModalAyuda()" class="px-3 md:px-4 py-3 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/40 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-emerald-500/30 transition-all flex items-center gap-2">
-                            <i class="fas fa-book-medical"></i> <span class="hidden sm:inline">Guía</span>
+                            <i class="fas fa-book-medical"></i> <span class="hidden sm:inline">Guía Médica</span>
+                        </button>
+                        <button onclick="generarReporteSalud(true)" class="px-3 md:px-4 py-3 bg-purple-500/20 text-purple-300 hover:bg-purple-500/40 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-purple-500/30 transition-all flex items-center gap-2">
+                            <i class="fas fa-heartbeat"></i> <span class="hidden sm:inline">Diagnóstico</span>
                         </button>
                         <button onclick="abrirModalAjustes()" class="px-3 md:px-4 py-3 bg-white/10 text-white hover:bg-white/20 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-white/20 transition-all flex items-center gap-2">
                             <i class="fas fa-cog"></i> <span class="hidden sm:inline">Ajustes</span>
@@ -157,28 +191,31 @@
         </div>
     </header>
 
+    <!-- ÁREA PRINCIPAL -->
     <div id="app-container" class="max-w-7xl mx-auto px-4 md:px-8">
+        <!-- Herramientas -->
         <div class="bg-white dark:bg-slate-800 p-3 md:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-5 flex flex-col md:flex-row gap-4 items-center justify-between">
             <div class="flex flex-wrap gap-2 items-center w-full md:w-auto">
-                <span class="font-black text-[10px] text-slate-400 uppercase tracking-widest mr-1">Paleta:</span>
+                <span class="font-black text-[10px] text-slate-400 uppercase tracking-widest mr-1">Pinceles de Actividad:</span>
                 <div id="color-palette" class="flex flex-wrap gap-1.5"></div>
             </div>
             <div class="flex gap-2 w-full md:w-auto shrink-0">
                 <button onclick="confirmarLimpiar()" class="flex-1 md:flex-none px-4 py-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-red-200 dark:border-red-800 transition-all flex items-center justify-center gap-2">
                     <i class="fas fa-trash-alt"></i> Borrar Todo
                 </button>
-                <button onclick="rellenarDescansos()" class="flex-1 md:flex-none px-4 py-2.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 rounded-xl font-bold text-[10px] md:text-xs uppercase border border-yellow-200 dark:border-yellow-800 transition-all flex items-center justify-center gap-2">
+                <button onclick="rellenarDescansos()" class="flex-1 md:flex-none px-4 py-2.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 rounded-xl font-bold text-[10px] md:text-xs uppercase transition-colors border border-yellow-200 dark:border-yellow-800 flex items-center justify-center gap-2">
                     <i class="fas fa-bolt"></i> Auto-Ocio
                 </button>
                 <button onclick="archivarSemana()" class="flex-1 md:flex-none px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-[10px] md:text-xs uppercase transition-all shadow-md flex items-center justify-center gap-2">
                     <i class="fas fa-archive"></i> Cerrar Semana
                 </button>
                 <button onclick="exportarPDF()" class="flex-1 md:flex-none px-4 py-2.5 bg-slate-900 dark:bg-slate-700 text-white hover:bg-slate-800 rounded-xl font-bold text-[10px] md:text-xs uppercase shadow-md flex items-center justify-center gap-2">
-                    <i class="fas fa-file-pdf"></i> Exportar
+                    <i class="fas fa-file-pdf"></i> Exportar Todo
                 </button>
             </div>
         </div>
 
+        <!-- Tabla de Horarios -->
         <div id="contenedor-horario" class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
             <div class="overflow-x-auto no-scrollbar">
                 <table class="w-full min-w-[800px] border-collapse" id="schedule-table">
@@ -192,6 +229,7 @@
             </div>
         </div>
 
+        <!-- Estadísticas -->
         <div id="stats-container" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-12"></div>
 
         <footer class="text-center py-10 border-t border-slate-200 dark:border-slate-800 opacity-60">
@@ -201,7 +239,7 @@
         </footer>
     </div>
 
-    <!-- MODAL CIERRE SEMANAL (PEDIDO) -->
+    <!-- MODAL CIERRE SEMANAL -->
     <div id="modal-cierre-semanal" class="fixed inset-0 z-[4800] modal-overlay hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 max-w-md w-full rounded-[2.5rem] p-8 text-center shadow-2xl border border-slate-700">
             <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-inner"><i class="fas fa-tasks text-2xl"></i></div>
@@ -209,17 +247,17 @@
             <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 font-semibold">Tus estadísticas se guardarán en el historial. ¿Qué elementos quieres borrar de la tabla para la próxima semana?</p>
             
             <div class="space-y-3 mb-8 text-left">
-                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
+                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors text-slate-800 dark:text-white">
                     <input type="checkbox" id="chk-clear-text" checked class="w-5 h-5 accent-indigo-600">
-                    <span class="font-bold text-sm dark:text-white">Borrar textos de actividades</span>
+                    <span class="font-bold text-sm">Borrar textos de actividades</span>
                 </label>
-                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
+                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors text-slate-800 dark:text-white">
                     <input type="checkbox" id="chk-clear-colors" class="w-5 h-5 accent-indigo-600">
-                    <span class="font-bold text-sm dark:text-white">Borrar colores de fondo</span>
+                    <span class="font-bold text-sm">Borrar colores de fondo</span>
                 </label>
-                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
+                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors text-slate-800 dark:text-white">
                     <input type="checkbox" id="chk-clear-done" checked class="w-5 h-5 accent-indigo-600">
-                    <span class="font-bold text-sm dark:text-white">Reiniciar tareas completadas (tachados)</span>
+                    <span class="font-bold text-sm">Reiniciar tareas completadas</span>
                 </label>
             </div>
 
@@ -259,7 +297,7 @@
     <div id="modal-ajustes" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-8 w-full max-w-lg shadow-2xl h-auto max-h-[85vh] flex flex-col border border-slate-700 mobile-modal-anim">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">AJUSTES</h3>
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Ajustes del Sistema</h3>
                 <button onclick="cerrarModal('modal-ajustes')"><i class="fas fa-times-circle text-slate-300 text-3xl"></i></button>
             </div>
             <div class="overflow-y-auto no-scrollbar space-y-6 flex-1 pb-6">
@@ -281,8 +319,8 @@
                     </select>
                 </div>
                 <div id="categorias-edit-list" class="space-y-2"></div>
-                <div class="grid grid-cols-2 gap-3 pt-4 border-t dark:border-slate-700">
-                    <button onclick="exportJSON()" class="p-3 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[9px] uppercase dark:text-white flex flex-col items-center gap-1"><i class="fas fa-download text-lg"></i> Backup</button>
+                <div class="grid grid-cols-2 gap-3 pt-4 border-t dark:border-slate-700 text-slate-800 dark:text-white">
+                    <button onclick="exportJSON()" class="p-3 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-download text-lg"></i> Backup</button>
                     <button onclick="document.getElementById('json-import').click()" class="p-3 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase flex flex-col items-center gap-1"><i class="fas fa-upload text-lg"></i> Importar</button>
                     <input type="file" id="json-import" class="hidden" accept=".json" onchange="importJSON(event)">
                 </div>
@@ -291,32 +329,57 @@
         </div>
     </div>
 
-    <!-- MODAL GUÍA -->
+    <!-- MODAL GUÍA MÉDICA DETALLADA (RESTAURADA) -->
     <div id="modal-ayuda" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
             <div class="bg-emerald-600 dark:bg-emerald-800 px-8 py-6 text-white flex justify-between items-center">
-                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Guía Médica</h3>
+                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Guía Médica Detallada</h3>
                 <button onclick="cerrarModal('modal-ayuda')"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
             <div id="contenido-guia-cientifica" class="p-6 md:p-8 overflow-y-auto space-y-6 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-sm">
+                
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-2 flex items-center gap-2"><i class="fas fa-bed"></i> Sueño Reparador</h4>
-                    <p class="font-semibold text-slate-700 dark:text-slate-300">Adultos: 7-9h | Adolescentes: 8-10h.</p>
-                    <p class="text-xs text-slate-500 mt-1">Esencial para eliminar toxinas cerebrales y fijar conocimientos nuevos.</p>
-                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[9px] uppercase font-black text-indigo-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente: NICHD NIH</a>
+                    <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7-9h | Adolescentes 8-10h.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Durante el sueño, el cerebro activa el sistema glinfático para eliminar residuos metabólicos. Es vital para la "neuroplasticidad": sin descanso, el cerebro no puede fijar lo aprendido en programación o música.</p>
+                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[9px] uppercase font-black text-indigo-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente Oficial: NICHD NIH</a>
                 </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-blue-700 dark:text-blue-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo (Deep Work)</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques de 25 a 90 min + 15 min de pausa total.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Forzar más de 90 min de atención analítica agota las reservas de glucosa prefrontal. Las pausas activas (sin pantallas) permiten que la red neuronal por defecto procese la información compleja.</p>
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/31725384/" target="_blank" class="text-[9px] uppercase font-black text-blue-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: PubMed NIH - Fatigue Study</a>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-teal-700 dark:text-teal-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-clock"></i> 3. Ciclo Circadiano</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300 leading-relaxed italic">"Hacer lo correcto en el momento correcto".</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed"><b>Mañana:</b> Pico de cortisol, ideal para lógica y resolución de problemas. <br><b>Tarde:</b> Pico de temperatura corporal, ideal para tareas físicas o creatividad fluida. <br><b>Noche:</b> Pico de melatonina, ideal para consolidación y descanso.</p>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6200866/" target="_blank" class="text-[9px] uppercase font-black text-teal-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: NIH PMC - Biological Rhythms</a>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-2 text-lg"><i class="fas fa-running"></i> 4. Actividad Física Metabólica</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Recomendación: 150-300 min semanales.</p>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">El movimiento estimula el factor neurotrófico (BDNF), que actúa como fertilizante para crear nuevas neuronas. Crucial para prevenir el sedentarismo tecnológico.</p>
+                    <a href="https://www.who.int/es/news-room/fact-sheets/detail/physical-activity" target="_blank" class="text-[9px] uppercase font-black text-emerald-500 underline mt-3 block tracking-widest"><i class="fas fa-link"></i> Fuente: OMS</a>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- MODAL DIAGNÓSTICO -->
+    <!-- MODAL DIAGNÓSTICO CLÍNICO (RESTAURADO) -->
     <div id="modal-analisis" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
             <div class="bg-purple-600 dark:bg-purple-800 px-8 py-6 text-white flex justify-between items-center">
-                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Escáner Bio-Salud</h3>
+                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Escáner Bio-Salud y Rendimiento</h3>
                 <button onclick="cerrarModal('modal-analisis')"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
-            <div id="reporte-contenido" class="p-6 md:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10"></div>
+            <div id="reporte-contenido" class="p-6 md:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10">
+                <!-- Se llena mediante generarReporteSalud() -->
+            </div>
         </div>
     </div>
 
@@ -388,7 +451,7 @@
             }
         }
 
-        function finalizeTutorial() { cerrarModal('tutorial-modal'); mostrarToast(`¡Iniciando, ${userName}!`); }
+        function finalizeTutorial() { cerrarModal('tutorial-modal'); mostrarToast(`¡Dashboard Élite Listo, ${userName}!`); }
 
         function toggleTimer() {
             const widget = document.getElementById('timer-widget');
@@ -420,12 +483,11 @@
             document.getElementById('btn-start-timer').innerText = "Iniciar";
         }
 
-        // --- MANEJO DE NOMBRE Y CIERRE ---
         function guardarNombreUsuario() {
             const el = document.getElementById('display-user-name');
             userName = el.innerText.trim() || "Usuario";
             localStorage.setItem('kairos_userName', userName);
-            mostrarToast("Nombre de usuario actualizado");
+            mostrarToast("Identidad actualizada");
         }
 
         function archivarSemana() {
@@ -459,7 +521,71 @@
             guardarDatosEnMemoria();
             calcularEstadisticas();
             cerrarModal('modal-cierre-semanal');
-            mostrarToast("¡Semana Archivada! Tabla actualizada.");
+            mostrarToast("Semana guardada en historial y tabla lista.");
+        }
+
+        // --- Lógica del Diagnóstico Clínico (PEDIDO) ---
+        function obtenerHTMLReporteSalud() {
+            let horasPorId = { salud: 0, trabajo: 0, proyectos: 0, estudio: 0, ocio: 0 };
+            let mapBgToId = {};
+            categorias.forEach(cat => mapBgToId[cat.bgClass] = cat.id);
+
+            document.querySelectorAll('.editable-content').forEach(c => {
+                let bg = null;
+                c.parentElement.classList.forEach(cls => {
+                    if (cls.startsWith('bg-') && !cls.includes('transparent') && !cls.includes('current') && !cls.includes('sky') && !cls.includes('indigo') && !cls.includes('orange')) {
+                        bg = cls;
+                    }
+                });
+                if(bg) {
+                    let id = mapBgToId[bg];
+                    if(id && horasPorId[id] !== undefined) horasPorId[id] += 0.5;
+                }
+            });
+
+            const cargaCognitiva = horasPorId.trabajo + horasPorId.proyectos + horasPorId.estudio;
+            const horasOcio = horasPorId.ocio;
+            const horasSalud = horasPorId.salud;
+
+            let html = "";
+
+            // Balance Mental
+            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">`;
+            html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-brain text-indigo-500"></i> Carga Analítica y Cognitiva</h4>`;
+            html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Total carga mental detectada: ${cargaCognitiva} horas semanales</p>`;
+            
+            if (cargaCognitiva > 55) {
+                html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ RIESGO CRÍTICO DE BURNOUT:</b> Estás superando el umbral de las 55h de alta demanda cognitiva. Los niveles de cortisol crónicamente elevados pueden dañar el hipocampo, afectando tu capacidad para aprender cosas nuevas.</p></div>`;
+            } else if (cargaCognitiva >= 45) {
+                html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ ESTADO DE ALTO RENDIMIENTO:</b> Estás en un ritmo de "élite", pero requiere un sueño estricto de 8-9 horas para no entrar en deuda cognitiva.</p></div>`;
+            } else {
+                html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ RITMO SALUDABLE:</b> Tu cerebro tiene tiempo suficiente para entrar en "Red Neuronal por Defecto" (descanso activo), esencial para la creatividad y resolución de problemas.</p></div>`;
+            }
+            html += `<a href="https://www.medicalnewstoday.com/articles/cognitive-fatigue" target="_blank" class="text-[10px] uppercase font-black tracking-widest text-indigo-500 underline mt-4 inline-block"><i class="fas fa-link"></i> Ciencia del Foco (Medical News)</a></div>`;
+
+            // Balance del Sistema Nervioso
+            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break">`;
+            html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-couch text-yellow-500"></i> Recuperación Parasimpática</h4>`;
+            html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Ocio y Desconexión: ${horasOcio} horas semanales</p>`;
+            if (horasOcio < 12) {
+                html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ DÉFICIT DE RECUPERACIÓN:</b> No estás agendando suficiente tiempo para "no hacer nada". Esto mantiene tu sistema nervioso en modo "alerta", lo que reduce la calidad del sueño profundo.</p></div>`;
+            } else {
+                html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ SISTEMA BALANCEADO:</b> Le das a tu cuerpo el tiempo necesario para reparar tejidos celulares y reducir la inflamación sistémica.</p></div>`;
+            }
+            html += `</div>`;
+
+            // Balance Físico
+            html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break">`;
+            html += `<h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-running text-emerald-500"></i> Prevención del Sedentarismo</h4>`;
+            html += `<p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Salud / Movimiento: ${horasSalud} horas</p>`;
+            if (horasSalud < 4) {
+                html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ RIESGO DE SEDENTARISMO:</b> El flujo sanguíneo cerebral disminuye tras largos periodos sentado programando. Recomendamos bloques de 15 min de ejercicio de alta intensidad para "oxigenar" las neuronas.</p></div>`;
+            } else {
+                html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ ESCUDO METABÓLICO:</b> Mantienes activa la producción de BDNF, protegiendo tu cerebro contra el deterioro por estrés laboral.</p></div>`;
+            }
+            html += `</div>`;
+
+            return html;
         }
 
         function abrirModalHistorial() {
@@ -474,7 +600,7 @@
                     categorias.forEach(cat => {
                         if(cat.isSpecial) return;
                         const h = entry.stats[cat.bgClass] || 0;
-                        if(h > 0) statsHtml += `<div class="flex items-center justify-between text-[10px] font-black uppercase"><span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full ${cat.bgClass.replace('100','500')}"></div> ${cat.nombre}</span><span>${h}H</span></div>`;
+                        if(h > 0) statsHtml += `<div class="flex items-center justify-between text-[10px] font-black uppercase"><span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full ${cat.bgClass.replace('100','400')}"></div> ${cat.nombre}</span><span>${h}H</span></div>`;
                     });
                     container.innerHTML += `<div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 mb-3 shadow-sm"><div class="flex justify-between items-start mb-3"><div><p class="text-[9px] font-black text-indigo-500 uppercase">${entry.fecha}</p><h4 class="font-black text-slate-800 dark:text-white uppercase tracking-tight">${entry.titulo}</h4></div><button onclick="borrarEntradaHistorial(${archive.length - 1 - idx})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button></div><div class="grid grid-cols-2 gap-x-6 gap-y-1 pt-2 border-t border-slate-50 dark:border-slate-700">${statsHtml}</div></div>`;
                 });
@@ -483,13 +609,14 @@
         }
 
         function borrarEntradaHistorial(idx) {
+            if(!confirm("¿Eliminar este registro permanente?")) return;
             const archive = JSON.parse(localStorage.getItem('kairos_archive') || '[]');
             archive.splice(idx, 1);
             localStorage.setItem('kairos_archive', JSON.stringify(archive));
             abrirModalHistorial();
         }
 
-        // --- CORE ---
+        // --- CORE CORE CORE ---
         function actualizarNombreUI() { document.getElementById('display-user-name').innerText = userName; }
         function updateLiveClock() {
             const n = new Date();
@@ -504,6 +631,7 @@
             const cell = document.querySelector(`.editable-content[data-dia="${diaIndex}"][data-hora="${hourStr}"]`);
             if (cell) cell.parentElement.classList.add('live-cell');
         }
+
         function renderizarPaleta() {
             const p = document.getElementById('color-palette'); p.innerHTML = '';
             categorias.forEach(cat => {
@@ -514,6 +642,7 @@
                 p.appendChild(btn);
             });
         }
+
         function renderizarTabla() {
             const head = document.getElementById('schedule-header'); const body = document.getElementById('schedule-body');
             while(head.children.length > 1) head.removeChild(head.lastChild);
@@ -545,10 +674,12 @@
                 });
             }
         }
+
         function paintCell(td) {
             td.classList.forEach(c => { if(c.startsWith('bg-') && !c.includes('transparent')) td.classList.remove(c); });
             if(colorActivo==='bg-white') td.classList.add('bg-transparent'); else td.classList.add(colorActivo);
         }
+
         function guardarDatosEnMemoria() {
             let data = {};
             document.querySelectorAll('.editable-content').forEach(c => {
@@ -562,6 +693,7 @@
             });
             localStorage.setItem('horarioPersonalPro', JSON.stringify(data));
         }
+
         function cargarHorario() {
             const saved = localStorage.getItem('horarioPersonalPro'); if(!saved) return;
             const data = JSON.parse(saved);
@@ -574,6 +706,7 @@
                 }
             });
         }
+
         function calcularEstadisticas() {
             const container = document.getElementById('stats-container'); container.innerHTML = '';
             let counts = {}; categorias.forEach(cat => { if(!cat.isSpecial) counts[cat.bgClass] = 0; });
@@ -587,6 +720,7 @@
                 container.innerHTML += `<div class="bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-3"><div class="w-3 h-3 rounded-full ${cat.bgClass.replace('100','500')} shrink-0"></div><div class="min-w-0"><p class="text-[8px] font-black text-slate-400 uppercase truncate">${cat.nombre}</p><p class="text-sm font-black dark:text-white">${h}H</p></div></div>`;
             });
         }
+
         function inicializarModoOscuro() { if(localStorage.getItem('theme')==='dark') document.documentElement.classList.add('dark'); }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light'); }
         function cargarConfiguracionAjustes() {
@@ -602,32 +736,53 @@
             const t = document.getElementById('toast'); document.getElementById('toast-message').innerText = m;
             t.classList.remove('translate-y-32', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000);
         }
+
         function rellenarDescansos() {
             const cat = categorias.find(x => x.id==='ocio'); let n = 0;
             document.querySelectorAll('.editable-content').forEach(c => {
                 if(!c.innerText && !Array.from(c.parentElement.classList).some(cl => cl.startsWith('bg-') && !cl.includes('current'))){
-                    c.parentElement.classList.add(cat.bgClass); c.innerText = "Pausa Activa"; n++;
+                    c.parentElement.classList.add(cat.bgClass); c.innerText = "Descanso Libre"; n++;
                 }
             });
             if(n){ guardarDatosEnMemoria(); calcularEstadisticas(); mostrarToast(`Auto-relleno: ${n} bloques.`); }
         }
+
         function exportarPDF() {
-            mostrarToast("Compilando PDF...", "blue"); window.scrollTo(0,0);
-            const overlay = document.createElement('div'); overlay.className = "fixed inset-0 bg-white z-[99999] flex items-center justify-center font-black"; overlay.innerText = "GENERANDO..."; document.body.appendChild(overlay);
+            mostrarToast("Compilando Reporte Élite...", "blue"); window.scrollTo(0,0);
+            const overlay = document.createElement('div'); 
+            overlay.className = "fixed inset-0 bg-white z-[99999] flex items-center justify-center flex-col font-black text-slate-800 text-center"; 
+            overlay.innerHTML = `<div class="animate-spin text-indigo-600 mb-4"><i class="fas fa-spinner fa-2x"></i></div>GENERANDO REPORTE COMPLETO...<br><span class="text-xs mt-2 opacity-60">Horario + Diagnóstico + Guía Médica</span>`; 
+            document.body.appendChild(overlay);
+            
             setTimeout(() => {
-                const wrap = document.createElement('div'); wrap.style.width = '1200px'; wrap.style.padding = '40px'; wrap.style.background = 'white';
-                wrap.innerHTML = `<h1 style="font-size:30px;font-weight:900">${document.getElementById('app-title').innerText}</h1><p>Usuario: ${userName}</p>`;
+                const wrap = document.createElement('div'); wrap.style.width = '1200px'; wrap.style.padding = '40px'; wrap.style.background = 'white'; wrap.style.color = '#000';
+                wrap.innerHTML = `<h1 style="font-size:32px;font-weight:900;margin-bottom:5px;">KAIRÓS ELITE PRO</h1><p style="font-weight:700;color:#6366F1">Usuario: ${userName} | Plan: ${document.getElementById('app-title').innerText}</p><br>`;
+                
                 const cloneTable = document.getElementById('contenedor-horario').cloneNode(true); 
                 cloneTable.style.width = "100%"; cloneTable.querySelector('.overflow-x-auto').style.overflow = "visible";
                 wrap.appendChild(cloneTable);
+                
+                const diag = document.createElement('div');
+                diag.innerHTML = `<div style="page-break-before: always; margin-top: 50px;"><h2 style="font-size:26px;font-weight:900;color:#4f46e5;border-bottom:3px solid #eef2ff;padding-bottom:15px;text-transform:uppercase;">Diagnóstico de Salud y Rendimiento</h2><div style="margin-top:25px;font-family:sans-serif;">${obtenerHTMLReporteSalud()}</div></div>`;
+                wrap.appendChild(diag);
+
+                const guia = document.createElement('div');
+                const guiaCont = document.getElementById('contenido-guia-cientifica').cloneNode(true);
+                guiaCont.style.background = "white"; guiaCont.style.color = "#000";
+                guia.innerHTML = `<div style="page-break-before: always; margin-top: 50px;"><h2 style="font-size:26px;font-weight:900;color:#059669;border-bottom:3px solid #ecfdf5;padding-bottom:15px;text-transform:uppercase;">Guía Médica y Referencias</h2></div>`;
+                guia.appendChild(guiaCont);
+                wrap.appendChild(guia);
+
                 document.body.appendChild(wrap);
-                html2pdf().set({ margin:10, filename:'Kairos_Elite_Report.pdf', html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a3', orientation:'landscape'} }).from(wrap).save().then(() => {
-                    document.body.removeChild(wrap); document.body.removeChild(overlay); mostrarToast("¡PDF Descargado!");
+                html2pdf().set({ margin:10, filename:'Kairos_Elite_Reporte_Total.pdf', html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a3', orientation:'landscape'}, pagebreak: { mode: ['css', 'legacy'] } }).from(wrap).save().then(() => {
+                    document.body.removeChild(wrap); document.body.removeChild(overlay); mostrarToast("¡Reporte Total Descargado!");
                 });
-            }, 800);
+            }, 1000);
         }
-        function exportJSON() { const b = new Blob([JSON.stringify({datos:localStorage.getItem('horarioPersonalPro'), cats:categorias, hStart:horaInicio, hEnd:horaFin, fmt:formatoHora, title:localStorage.getItem('horarioTitulo'), name:userName, archive: localStorage.getItem('kairos_archive')})], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kairos_backup.json'; a.click(); }
+
+        function exportJSON() { const b = new Blob([JSON.stringify({datos:localStorage.getItem('horarioPersonalPro'), cats:categorias, hStart:horaInicio, hEnd:horaFin, fmt:formatoHora, title:localStorage.getItem('horarioTitulo'), name:userName, archive: localStorage.getItem('kairos_archive')})], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kairos_elite_backup.json'; a.click(); }
         function importJSON(e) { const r = new FileReader(); r.onload = (ev) => { const d = JSON.parse(ev.target.result); localStorage.setItem('horarioPersonalPro', d.datos); localStorage.setItem('horarioCategorias', JSON.stringify(d.cats)); localStorage.setItem('horarioHoras', JSON.stringify({inicio:d.hStart, fin:d.hEnd})); localStorage.setItem('horarioFormatoHora', d.fmt); localStorage.setItem('horarioTitulo', d.title); localStorage.setItem('kairos_userName', d.name); if(d.archive) localStorage.setItem('kairos_archive', d.archive); location.reload(); }; r.readAsText(e.target.files[0]); }
+        
         function abrirModalAjustes() {
             const sI = document.getElementById('select-hora-inicio'); const sF = document.getElementById('select-hora-fin');
             sI.innerHTML = ''; sF.innerHTML = '';
@@ -652,10 +807,10 @@
         }
         function abrirModalAyuda() { document.getElementById('modal-ayuda').classList.remove('hidden'); }
         function generarReporteSalud(m) { 
-            document.getElementById('reporte-contenido').innerHTML = `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 font-bold text-sm">Escaneando métricas... Tu balance es óptimo. Sigue así.</div>`;
+            document.getElementById('reporte-contenido').innerHTML = obtenerHTMLReporteSalud();
             document.getElementById('modal-analisis').classList.remove('hidden'); 
         }
-        function confirmarLimpiar() { if(confirm("¿BORRAR TODO?")) { localStorage.removeItem('horarioPersonalPro'); location.reload(); } }
+        function confirmarLimpiar() { if(confirm("¿BORRAR TODO? Se perderán las actividades actuales.")) { localStorage.removeItem('horarioPersonalPro'); location.reload(); } }
     </script>
 </body>
 </html>
