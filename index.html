@@ -16,8 +16,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');</style>
     
+    <!-- Librerías Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js para la Dona -->
     
     <style>
         body {
@@ -44,14 +46,16 @@
         .selected-cell { outline: 2px dashed #ef4444 !important; outline-offset: -2px; background-color: rgba(239, 68, 68, 0.15) !important; }
         .dark .selected-cell { background-color: rgba(239, 68, 68, 0.3) !important; }
         
-        /* Scrollbars Ocultas para Menús y Tablas */
+        /* Ocultar scrollbars */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Ajuste de Tabla Móvil */
+        /* Tabla Fija */
         #schedule-table { table-layout: fixed; width: 100%; min-width: 800px; }
         #schedule-table th:first-child, #schedule-table td:first-child { width: 65px; }
-        .editable-content { word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap; max-width: 100%; }
+        .editable-content { word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap; max-width: 100%; cursor: text; }
+        .editable-content[draggable="true"] { cursor: grab; }
+        .editable-content[draggable="true"]:active { cursor: grabbing; }
 
         .glass-header { background: linear-gradient(135deg, #020617 0%, #1e1b4b 100%); transition: all 0.5s ease; }
         .modal-overlay { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); }
@@ -73,8 +77,8 @@
             100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
         }
 
-        /* Se eliminó el fondo de la columna actual para que los colores siempre sean visibles.
-           El único marco diferente ahora es el de la hora actual (.live-cell) */
+        /* Se eliminó el fondo !important de la columna actual para que los colores siempre sean visibles. */
+        /* El único marco diferente es el de la hora actual (.live-cell) */
 
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .mobile-modal-anim { animation: slideUp 0.3s ease-out forwards; }
@@ -91,7 +95,7 @@
         .xp-bar-bg { background-color: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; overflow: hidden; margin-top: 4px; width: 80px; }
         .xp-bar-fill { height: 100%; transition: width 0.4s ease; background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
 
-        body.zen-mode .glass-header, body.zen-mode .toolbar-section, body.zen-mode #stats-container, body.zen-mode footer { display: none !important; }
+        body.zen-mode .glass-header, body.zen-mode .toolbar-section, body.zen-mode #stats-container, body.zen-mode footer, body.zen-mode #weekly-goals-container { display: none !important; }
         body.zen-mode #app-container { margin-top: 2rem; }
         body.zen-mode #zen-exit-btn { display: flex !important; }
         #zen-exit-btn { display: none; }
@@ -119,43 +123,6 @@
         </button>
     </div>
 
-    <!-- MODAL ONBOARDING -->
-    <div id="tutorial-modal" class="fixed inset-0 z-[5000] modal-overlay hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 max-w-md w-full rounded-[3rem] p-8 text-center shadow-2xl border border-slate-700 transform transition-all" id="tutorial-container">
-            <div id="step-0" class="step-content">
-                <div class="w-20 h-20 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-[2rem] mx-auto mb-6 flex items-center justify-center shadow-inner"><i class="fas fa-id-card text-3xl"></i></div>
-                <h2 class="text-2xl font-black mb-2 uppercase text-slate-900 dark:text-white">Identificación</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mb-8 font-semibold">Para comenzar, ingresa tu nombre de usuario:</p>
-                <input type="text" id="name-input-init" class="w-full bg-slate-50 dark:bg-slate-900 border-2 border-indigo-100 dark:border-indigo-900/50 rounded-2xl py-4 px-6 text-center text-xl font-black text-indigo-600 dark:text-indigo-400 outline-none focus:border-indigo-500 mb-8" placeholder="Nombre..." onkeydown="if(event.key==='Enter') goToStep(1)">
-                <button onclick="goToStep(1)" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95 transition-all">Siguiente Paso</button>
-            </div>
-            <div id="step-1" class="step-content hidden text-left">
-                <h3 class="text-indigo-500 font-black text-[10px] uppercase mb-1">Tutorial 1/4</h3>
-                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Pintar, Vincular y Seleccionar</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Usa la paleta para pintar. Usa la herramienta <b>Vincular</b> (🔗) para escribir en varios días a la vez, o <b>Seleccionar</b> (🖱️) para borrar casillas por lotes.</p>
-                <button onclick="goToStep(2)" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs active:scale-95">Entendido</button>
-            </div>
-            <div id="step-2" class="step-content hidden text-left">
-                <h3 class="text-indigo-500 font-black text-[10px] uppercase mb-1">Tutorial 2/4</h3>
-                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Seguimiento en Vivo</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Resaltamos con un <b>Brillo Azul</b> la hora actual para que nunca pierdas el foco de tu misión presente.</p>
-                <button onclick="goToStep(3)" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs active:scale-95">Siguiente</button>
-            </div>
-            <div id="step-3" class="step-content hidden text-left">
-                <h3 class="text-indigo-500 font-black text-[10px] uppercase mb-1">Tutorial 3/4</h3>
-                <h2 class="text-xl font-black mb-4 uppercase text-slate-900 dark:text-white">Modo Zen & Multi-Horario</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">Escribe <b>/pomodoro</b> en cualquier celda para activar el temporizador. Puedes crear varios perfiles (Ej. Vacaciones) en el menú superior.</p>
-                <button onclick="goToStep(4)" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs active:scale-95">Continuar</button>
-            </div>
-            <div id="step-4" class="step-content hidden">
-                <div class="w-20 h-20 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-500 rounded-full mx-auto mb-6 flex items-center justify-center"><i class="fas fa-crown text-3xl"></i></div>
-                <h2 class="text-2xl font-black mb-2 uppercase text-slate-900 dark:text-white">Tema Oro Secreto</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mb-8 font-semibold">Si logras que el "Diagnóstico de Salud" marque verde en todas las categorías, desbloquearás la temática dorada de élite.</p>
-                <button onclick="finalizeTutorial()" class="w-full bg-slate-950 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95">Empezar Dashboard</button>
-            </div>
-        </div>
-    </div>
-
     <!-- UI HEADER -->
     <header class="glass-header text-white p-4 md:p-8 rounded-b-[2.5rem] shadow-2xl mb-4 md:mb-6 relative z-20" id="main-header">
         <div class="max-w-7xl mx-auto">
@@ -170,6 +137,10 @@
                     <div class="flex flex-col items-end text-right hidden sm:flex">
                         <span class="text-[8px] font-black uppercase tracking-widest text-indigo-300">NIVEL <span id="user-level-display" class="text-yellow-400 text-[10px]">1</span></span>
                         <div class="xp-bar-bg"><div id="user-xp-fill" class="xp-bar-fill w-0"></div></div>
+                    </div>
+                    <!-- Indicador de Guardado Nube -->
+                    <div class="flex items-center justify-center bg-white/5 w-8 h-8 rounded-xl border border-white/10 shadow-inner" title="Estado de Guardado">
+                        <i id="save-status-icon" class="fas fa-cloud-upload-alt text-indigo-200 transition-colors duration-300"></i>
                     </div>
                     <div class="flex items-center gap-1.5 bg-white/10 px-2 py-1 md:px-3 md:py-1.5 rounded-xl border border-white/20 shadow-inner">
                         <i class="fas fa-cloud text-indigo-200 text-xs"></i>
@@ -211,26 +182,26 @@
                     
                     <!-- Botones envueltos para móviles -->
                     <div class="flex flex-wrap gap-2 justify-start md:justify-end w-full">
-                        <button onclick="toggleZenMode()" class="p-2 md:p-3 bg-pink-500/20 text-pink-400 hover:bg-pink-500/40 rounded-xl border border-pink-500/30 transition-all active:scale-90" title="Modo Zen">
+                        <button onclick="toggleZenMode()" class="p-2 md:p-3 bg-pink-500/20 text-pink-400 hover:bg-pink-500/40 rounded-xl border border-pink-500/30 transition-all active:scale-90" aria-label="Modo Zen" title="Modo Zen">
                             <i class="fas fa-spa text-sm md:text-base"></i>
                         </button>
-                        <button onclick="toggleTimer()" class="p-2 md:p-3 bg-orange-500/20 text-orange-400 hover:bg-orange-500/40 rounded-xl border border-orange-500/30 transition-all active:scale-90" title="Pomodoro">
+                        <button onclick="toggleTimer()" class="p-2 md:p-3 bg-orange-500/20 text-orange-400 hover:bg-orange-500/40 rounded-xl border border-orange-500/30 transition-all active:scale-90" aria-label="Temporizador Pomodoro" title="Pomodoro">
                             <i class="fas fa-stopwatch text-sm md:text-base"></i>
                         </button>
-                        <button onclick="toggleDarkMode()" class="p-2 md:p-3 bg-white/10 text-yellow-300 hover:bg-white/20 rounded-xl border border-white/10 transition-all active:scale-90" title="Modo Oscuro">
+                        <button onclick="toggleDarkMode()" class="p-2 md:p-3 bg-white/10 text-yellow-300 hover:bg-white/20 rounded-xl border border-white/10 transition-all active:scale-90" aria-label="Cambiar Tema" title="Modo Oscuro">
                             <i id="theme-icon" class="fas fa-sun text-sm md:text-base"></i>
                         </button>
-                        <button onclick="abrirModalHistorial()" class="p-2 md:p-3 bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 rounded-xl border border-blue-500/30 transition-all active:scale-90" title="Historial Semanal">
+                        <button onclick="abrirModalHistorial()" class="p-2 md:p-3 bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 rounded-xl border border-blue-500/30 transition-all active:scale-90" aria-label="Ver Historial" title="Historial Semanal">
                             <i class="fas fa-history text-sm md:text-base"></i>
                         </button>
-                        <button onclick="abrirModalAyuda()" class="px-2.5 py-2 md:px-4 md:py-3 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/40 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-emerald-500/30 transition-all flex items-center gap-1.5">
+                        <button onclick="abrirModalAyuda()" class="px-2.5 py-2 md:px-4 md:py-3 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/40 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-emerald-500/30 transition-all flex items-center gap-1.5" aria-label="Guía Médica">
                             <i class="fas fa-book-medical text-sm md:text-base"></i> <span class="hidden sm:inline">Guía Médica</span>
                         </button>
-                        <button onclick="generarReporteSalud(true)" class="px-2.5 py-2 md:px-4 md:py-3 bg-purple-500/20 text-purple-300 hover:bg-purple-500/40 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-purple-500/30 transition-all flex items-center gap-1.5 relative">
+                        <button onclick="generarReporteSalud(true)" class="px-2.5 py-2 md:px-4 md:py-3 bg-purple-500/20 text-purple-300 hover:bg-purple-500/40 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-purple-500/30 transition-all flex items-center gap-1.5 relative" aria-label="Diagnóstico">
                             <i class="fas fa-heartbeat text-sm md:text-base"></i> <span class="hidden sm:inline">Diagnóstico</span>
                             <span id="gold-badge" class="hidden absolute -top-1 -right-1 bg-yellow-400 w-2.5 h-2.5 md:w-3 md:h-3 rounded-full border border-slate-900 shadow-md"></span>
                         </button>
-                        <button onclick="abrirModalAjustes()" class="px-2.5 py-2 md:px-4 md:py-3 bg-white/10 text-white hover:bg-white/20 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-white/20 transition-all flex items-center gap-1.5">
+                        <button onclick="abrirModalAjustes()" class="px-2.5 py-2 md:px-4 md:py-3 bg-white/10 text-white hover:bg-white/20 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-white/20 transition-all flex items-center gap-1.5" aria-label="Ajustes">
                             <i class="fas fa-cog text-sm md:text-base"></i> <span class="hidden sm:inline">Ajustes</span>
                         </button>
                     </div>
@@ -241,17 +212,23 @@
 
     <div id="app-container" class="max-w-7xl mx-auto px-2 sm:px-4 md:px-8">
         
+        <!-- OBJETIVOS SEMANALES (NUEVO) -->
+        <div id="weekly-goals-container" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-3 flex flex-col gap-2">
+            <h3 class="text-[10px] md:text-xs font-black uppercase text-indigo-500 tracking-widest flex items-center gap-2"><i class="fas fa-bullseye"></i> Objetivos de la Semana</h3>
+            <div id="weekly-goals-text" contenteditable="true" data-placeholder="Escribe tus 2 o 3 metas principales aquí..." class="w-full min-h-[40px] outline-none text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300" oninput="debouncedSaveGoals()"></div>
+        </div>
+
         <!-- SECCIÓN DE HERRAMIENTAS OPTIMIZADA PARA MÓVIL -->
-        <div class="toolbar-section bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-3 flex flex-col gap-3">
+        <div class="toolbar-section bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-3 flex flex-col lg:flex-row gap-3 items-center justify-between">
             
             <!-- Paleta scrolleable horizontalmente en móviles -->
-            <div class="flex items-center w-full">
+            <div class="flex items-center w-full lg:w-auto">
                 <span class="font-black text-[9px] text-slate-400 uppercase tracking-widest mr-2 shrink-0">Pinceles:</span>
                 <div id="color-palette" class="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 w-full no-scrollbar"></div>
             </div>
             
             <!-- Botones de Acción adaptados a cuadrícula móvil -->
-            <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full">
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full lg:w-auto">
                 <button id="btn-lock" onclick="toggleLock()" class="col-span-2 sm:col-span-1 w-full sm:w-auto sm:flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-900/20 text-slate-600 dark:text-slate-400 hover:bg-slate-100 rounded-xl font-bold text-[9px] md:text-xs uppercase border border-slate-200 dark:border-slate-800 transition-all flex items-center justify-center gap-1.5">
                     <i class="fas fa-lock"></i> Bloquear
                 </button>
@@ -263,6 +240,10 @@
                 </button>
                 <button onclick="archivarSemana()" class="w-full sm:w-auto sm:flex-1 px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-[9px] md:text-xs uppercase transition-all shadow-md flex items-center justify-center gap-1.5">
                     <i class="fas fa-archive"></i> Cerrar Sem.
+                </button>
+                <!-- BOTÓN EXPORTAR ICS AÑADIDO JUNTO A PDF -->
+                <button onclick="exportarICS()" class="w-full sm:w-auto sm:flex-1 px-3 py-2 bg-teal-600 text-white hover:bg-teal-700 rounded-xl font-bold text-[9px] md:text-xs uppercase shadow-md flex items-center justify-center gap-1.5" title="Exportar a Google/Apple Calendar">
+                    <i class="fas fa-calendar-plus"></i> .ICS
                 </button>
                 <button onclick="exportarPDF()" class="w-full sm:w-auto sm:flex-1 px-3 py-2 bg-slate-900 dark:bg-slate-700 text-white hover:bg-slate-800 rounded-xl font-bold text-[9px] md:text-xs uppercase shadow-md flex items-center justify-center gap-1.5">
                     <i class="fas fa-file-pdf"></i> Exportar
@@ -285,7 +266,21 @@
             </div>
         </div>
 
-        <div id="stats-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-10"></div>
+        <!-- CONTENEDOR ESTADÍSTICAS Y GRÁFICO DE DONA -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-10">
+            <!-- Stats -->
+            <div id="stats-container" class="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+            <!-- Dona -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col items-center justify-center relative min-h-[180px]">
+                <h4 class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 w-full text-center">Distribución del Horario</h4>
+                <div class="relative w-full flex-1 flex items-center justify-center h-32">
+                    <canvas id="donutChart"></canvas>
+                    <div id="donut-empty-state" class="absolute inset-0 flex items-center justify-center text-center text-xs font-bold text-slate-400 opacity-60 px-4 hidden">
+                        Añade actividades al horario para ver la distribución.
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <footer class="text-center py-8 border-t border-slate-200 dark:border-slate-800 opacity-60">
             <p class="text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] mb-1 italic text-indigo-500">Desarrollado por</p>
@@ -296,12 +291,12 @@
 
     <!-- MODALES -->
 
-    <!-- MODAL AVATAR CON VISTA PREVIA -->
+    <!-- MODAL AVATAR -->
     <div id="modal-avatar" class="fixed inset-0 z-[6000] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 max-w-sm w-full rounded-t-[2.5rem] sm:rounded-[2rem] p-6 text-center shadow-2xl border border-slate-700 mobile-modal-anim">
             <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
                 <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tighter">Estudio de Avatar</h3>
-                <button onclick="cerrarModal('modal-avatar')"><i class="fas fa-times-circle text-slate-300 text-2xl hover:text-red-500 transition-colors"></i></button>
+                <button onclick="cerrarModal('modal-avatar')" aria-label="Cerrar"><i class="fas fa-times-circle text-slate-300 text-2xl hover:text-red-500 transition-colors"></i></button>
             </div>
 
             <div class="flex justify-center mb-5">
@@ -336,7 +331,7 @@
         <div class="bg-white dark:bg-slate-800 max-w-sm w-full rounded-[2.5rem] p-6 text-center shadow-2xl border border-slate-700">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-black uppercase text-slate-900 dark:text-white tracking-tighter">Gestor de Perfiles</h2>
-                <button onclick="cerrarModal('modal-perfiles')"><i class="fas fa-times-circle text-slate-300 text-2xl hover:text-red-500 transition-colors"></i></button>
+                <button onclick="cerrarModal('modal-perfiles')" aria-label="Cerrar"><i class="fas fa-times-circle text-slate-300 text-2xl hover:text-red-500 transition-colors"></i></button>
             </div>
             
             <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 mb-4">
@@ -365,7 +360,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-6 sm:p-8 w-full max-w-lg shadow-2xl h-auto max-h-[90vh] flex flex-col border border-slate-700 mobile-modal-anim">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Ajustes del Sistema</h3>
-                <button onclick="cerrarModal('modal-ajustes')"><i class="fas fa-times-circle text-slate-300 text-3xl hover:text-red-500 transition-colors"></i></button>
+                <button onclick="cerrarModal('modal-ajustes')" aria-label="Cerrar"><i class="fas fa-times-circle text-slate-300 text-3xl hover:text-red-500 transition-colors"></i></button>
             </div>
             <div class="overflow-y-auto no-scrollbar space-y-4 flex-1 pb-4">
                 <div class="grid grid-cols-2 gap-3">
@@ -383,7 +378,6 @@
                         <input type="text" id="input-ciudad" class="w-full bg-transparent text-xs font-black outline-none dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1" placeholder="Ej. Madrid, Bogotá, Miami...">
                     </div>
                     
-                    <!-- TAMAÑO DE FUENTE -->
                     <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-700 col-span-2">
                         <label class="block text-[8px] font-black uppercase text-slate-400 mb-1">Tamaño de Fuente (Tabla)</label>
                         <select id="select-font-size" class="w-full bg-transparent text-xs font-black outline-none dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1">
@@ -405,12 +399,11 @@
                 <div id="categorias-edit-list" class="space-y-1.5"></div>
                 
                 <div class="grid grid-cols-2 gap-2 pt-2 border-t dark:border-slate-700 text-slate-800 dark:text-white">
-                    <button onclick="exportJSON()" class="p-2 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[8px] uppercase flex flex-col items-center gap-1"><i class="fas fa-download text-sm"></i> Descargar Backup</button>
-                    <button onclick="cerrarModal('modal-ajustes'); gestionarPerfiles();" class="p-2 bg-slate-900 text-white rounded-xl font-black text-[8px] uppercase flex flex-col items-center gap-1"><i class="fas fa-users text-sm"></i> Importar Amigo</button>
+                    <button onclick="exportJSON()" class="p-2 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[8px] uppercase flex flex-col items-center gap-1"><i class="fas fa-download text-sm"></i> Backup</button>
+                    <button onclick="cerrarModal('modal-ajustes'); gestionarPerfiles();" class="p-2 bg-slate-900 text-white rounded-xl font-black text-[8px] uppercase flex flex-col items-center gap-1"><i class="fas fa-users text-sm"></i> Importar</button>
                     <input type="file" id="json-import" class="hidden" accept=".json" onchange="importJSON(event)">
                 </div>
 
-                <!-- BOTÓN DE FORMATEO -->
                 <div class="mt-2 pt-2 text-center">
                     <button onclick="factoryReset()" class="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors">
                         <i class="fas fa-skull-crossbones mr-1"></i> Restablecer App
@@ -421,52 +414,37 @@
         </div>
     </div>
 
-    <!-- MODAL GUÍA MÉDICA DETALLADA (ACTUALIZADA Y COMPLETA) -->
+    <!-- MODAL GUÍA MÉDICA DETALLADA -->
     <div id="modal-ayuda" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
             <div class="bg-emerald-600 dark:bg-emerald-800 px-6 py-4 sm:px-8 sm:py-6 text-white flex justify-between items-center">
                 <h3 class="text-lg sm:text-xl font-black flex items-center gap-2 uppercase italic tracking-tighter">Guía Médica Detallada</h3>
-                <button onclick="cerrarModal('modal-ayuda')"><i class="fas fa-times-circle text-2xl"></i></button>
+                <button onclick="cerrarModal('modal-ayuda')" aria-label="Cerrar"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
             <div id="contenido-guia-cientifica" class="p-5 sm:p-8 overflow-y-auto space-y-6 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-xs sm:text-sm">
                 
                 <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
                     <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7 a 9 horas | Adolescentes 8 a 10 horas.</p>
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">Durante el sueño profundo y la fase REM, el cerebro activa el sistema glinfático para eliminar toxinas y residuos metabólicos acumulados durante el día. Es el momento crítico para la neuroplasticidad: sin este descanso, el cerebro es incapaz de consolidar y fijar lo aprendido, limitando tu rendimiento cognitivo a largo plazo.</p>
-                    <a href="https://www.nichd.nih.gov/health/topics/sleep/conditioninfo/how-much" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-indigo-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente Oficial: NICHD NIH</a>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">Durante el sueño profundo y la fase REM, el cerebro activa el sistema glinfático para eliminar toxinas y residuos metabólicos acumulados durante el día. Es el momento crítico para la neuroplasticidad.</p>
                 </div>
 
                 <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
                     <h4 class="font-black text-blue-700 dark:text-blue-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo (Deep Work)</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques de 25 a 90 min + 15 min de pausa total.</p>
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">El cerebro humano no está diseñado para la atención ininterrumpida. Forzar más de 90 minutos de análisis continuo agota drásticamente las reservas de glucosa en la corteza prefrontal, provocando fatiga mental. Las pausas activas (sin pantallas) reactivan la 'Red Neuronal por Defecto', permitiendo procesar información compleja de fondo.</p>
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/31725384/" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-blue-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente: PubMed NIH - Fatigue Study</a>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">El cerebro humano no está diseñado para la atención ininterrumpida. Forzar más de 90 minutos agota drásticamente la glucosa prefrontal, provocando fatiga. Usa el /pomodoro.</p>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-teal-700 dark:text-teal-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-clock"></i> 3. Ciclo Circadiano</h4>
-                    <p class="font-semibold text-slate-700 dark:text-slate-300 leading-relaxed italic">"Hacer lo correcto en el momento biológico correcto".</p>
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed"><b>Mañana:</b> Pico natural de cortisol. Es el estado biológico ideal para la lógica, toma de decisiones difíciles y tareas de alta demanda analítica. <br><b>Tarde:</b> Pico de temperatura corporal, el momento óptimo para la coordinación física, tareas mecánicas o dejar fluir la creatividad. <br><b>Noche:</b> Pico de melatonina, ideal para la lectura relajada y la consolidación de la memoria antes de dormir.</p>
-                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6200866/" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-teal-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente: NIH PMC - Biological Rhythms</a>
-                </div>
-
-                <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-emerald-700 dark:text-emerald-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-running"></i> 4. Actividad Física Metabólica</h4>
-                    <p class="font-semibold text-slate-700 dark:text-slate-300">Recomendación: 150-300 min semanales.</p>
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">El ejercicio cardiovascular y de fuerza estimula la liberación del factor neurotrófico derivado del cerebro (BDNF). Este actúa literalmente como un 'fertilizante' biológico, promoviendo la creación de nuevas neuronas (neurogénesis) y protegiendo el cerebro contra el estrés oxidativo generado por el trabajo tecnológico sedentario.</p>
-                    <a href="https://www.who.int/es/news-room/fact-sheets/detail/physical-activity" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-emerald-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Fuente: OMS (Organización Mundial de la Salud)</a>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DIAGNÓSTICO CLÍNICO (ACTUALIZADO Y COMPLETO) -->
+    <!-- MODAL DIAGNÓSTICO CLÍNICO -->
     <div id="modal-analisis" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
             <div class="bg-purple-600 dark:bg-purple-800 px-6 py-4 sm:px-8 sm:py-6 text-white flex justify-between items-center">
                 <h3 class="text-lg sm:text-xl font-black flex items-center gap-2 uppercase italic tracking-tighter">Escáner Bio-Salud y Rendimiento</h3>
-                <button onclick="cerrarModal('modal-analisis')"><i class="fas fa-times-circle text-2xl"></i></button>
+                <button onclick="cerrarModal('modal-analisis')" aria-label="Cerrar"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
             <div id="reporte-contenido" class="p-5 sm:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10">
             </div>
@@ -490,7 +468,7 @@
                 </label>
                 <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors text-slate-800 dark:text-white">
                     <input type="checkbox" id="chk-clear-done" checked class="w-5 h-5 accent-indigo-600">
-                    <span class="font-bold text-sm">Reiniciar tareas (XP)</span>
+                    <span class="font-bold text-sm">Reiniciar tareas completadas (XP)</span>
                 </label>
             </div>
             <div class="flex gap-3">
@@ -504,8 +482,8 @@
     <div id="modal-historial" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
             <div class="bg-blue-600 dark:bg-blue-800 px-8 py-6 text-white flex justify-between items-center">
-                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Historial de Semanas</h3>
-                <button onclick="cerrarModal('modal-historial')"><i class="fas fa-times-circle text-2xl"></i></button>
+                <h3 class="text-xl font-black flex items-center gap-3 uppercase italic tracking-tighter">Historial Semanal</h3>
+                <button onclick="cerrarModal('modal-historial')" aria-label="Cerrar"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
             <div id="historial-contenido" class="p-6 md:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-sm"></div>
         </div>
@@ -515,15 +493,15 @@
     <div id="timer-widget" class="fixed bottom-24 left-4 right-4 md:right-auto md:bottom-6 md:left-6 bg-white dark:bg-slate-800 rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-slate-200 dark:border-slate-700 p-5 z-[4000] hidden flex-col items-center gap-3 md:w-64">
         <div class="flex justify-between w-full items-center border-b border-slate-100 dark:border-slate-700 pb-3">
             <span class="font-black text-[10px] uppercase tracking-widest text-slate-800 dark:text-white flex items-center gap-2"><i class="fas fa-fire text-orange-500"></i> Foco Profundo</span>
-            <button onclick="toggleTimer()" class="text-slate-400 hover:text-red-500 transition-colors p-2"><i class="fas fa-times-circle text-lg"></i></button>
+            <button onclick="toggleTimer()" class="text-slate-400 hover:text-red-500 transition-colors p-2" aria-label="Cerrar Pomodoro"><i class="fas fa-times-circle text-lg"></i></button>
         </div>
         <div id="timer-display" class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter my-2 tabular-nums">25:00</div>
         
         <div class="w-full flex justify-around mb-2">
-             <button onclick="playFocusSound('rain')" title="Lluvia" class="text-blue-400 hover:scale-110 transition-transform bg-blue-50 dark:bg-blue-900/30 p-3 rounded-full"><i class="fas fa-cloud-showers-heavy"></i></button>
-             <button onclick="playFocusSound('forest')" title="Bosque" class="text-emerald-400 hover:scale-110 transition-transform bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-full"><i class="fas fa-tree"></i></button>
-             <button onclick="playFocusSound('cafe')" title="Cafetería" class="text-yellow-600 hover:scale-110 transition-transform bg-yellow-50 dark:bg-yellow-900/30 p-3 rounded-full"><i class="fas fa-coffee"></i></button>
-             <button onclick="stopFocusSound()" title="Silencio" class="text-slate-400 hover:text-red-400 transition-transform bg-slate-100 dark:bg-slate-700 p-3 rounded-full"><i class="fas fa-volume-mute"></i></button>
+             <button onclick="playFocusSound('rain')" title="Lluvia" aria-label="Sonido Lluvia" class="text-blue-400 hover:scale-110 bg-blue-50 dark:bg-blue-900/30 p-3 rounded-full"><i class="fas fa-cloud-showers-heavy"></i></button>
+             <button onclick="playFocusSound('forest')" title="Bosque" aria-label="Sonido Bosque" class="text-emerald-400 hover:scale-110 bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-full"><i class="fas fa-tree"></i></button>
+             <button onclick="playFocusSound('cafe')" title="Cafetería" aria-label="Sonido Cafetería" class="text-yellow-600 hover:scale-110 bg-yellow-50 dark:bg-yellow-900/30 p-3 rounded-full"><i class="fas fa-coffee"></i></button>
+             <button onclick="stopFocusSound()" title="Silencio" aria-label="Silenciar" class="text-slate-400 hover:text-red-400 bg-slate-100 dark:bg-slate-700 p-3 rounded-full"><i class="fas fa-volume-mute"></i></button>
         </div>
 
         <div class="flex gap-2 w-full">
@@ -558,6 +536,7 @@
         let userAvatar = localStorage.getItem('kairos_avatar') || '<i class="fas fa-user-astronaut text-xl md:text-2xl text-indigo-300"></i>';
         const presetIcons = ['fa-user-astronaut', 'fa-user-ninja', 'fa-user-secret', 'fa-user-tie', 'fa-user-graduate', 'fa-female', 'fa-user', 'fa-crown', 'fa-gem', 'fa-fire', 'fa-cat', 'fa-dog', 'fa-dragon', 'fa-ghost', 'fa-robot'];
         let tempAvatar = userAvatar;
+        let chartInstance = null; // Instancia del gráfico de dona
         
         const categoriasDefault = [
             { id: 'select', nombre: 'Seleccionar', bgClass: 'select-mode', borderClass: 'border-indigo-500', isSpecial: true },
@@ -571,19 +550,57 @@
             { id: 'borrar', nombre: 'Borrador', bgClass: 'bg-white', borderClass: 'border-slate-300', isSpecial: true }
         ];
         
+        const hexColors = {
+            'bg-emerald-100': '#34d399',
+            'bg-blue-100': '#60a5fa',
+            'bg-orange-100': '#fb923c',
+            'bg-purple-100': '#c084fc',
+            'bg-yellow-100': '#facc15'
+        };
+
         let categorias = []; 
         let colorActivo = ''; 
         let herramientaActiva = '';
         let isDragging = false; 
-        
-        // ESTADO DE BLOQUEO (NUEVO)
         let isScheduleLocked = false;
 
-        // --- CORE MAIN FUNCIONES ---
-        function actualizarNombreUI() { 
-            const el = document.getElementById('display-user-name'); 
-            if(el) el.innerText = userName; 
+        // Petición de Notificaciones al cargar
+        if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission();
         }
+
+        // --- UTILIDADES ---
+        function debounce(func, timeout = 600){
+            let timer;
+            return (...args) => { clearTimeout(timer); timer = setTimeout(() => { func.apply(this, args); }, timeout); };
+        }
+
+        function flashSaveIndicator() {
+            const icon = document.getElementById('save-status-icon');
+            if(icon) {
+                icon.classList.remove('text-indigo-200'); icon.classList.add('text-green-400', 'animate-pulse');
+                setTimeout(() => { icon.classList.remove('text-green-400', 'animate-pulse'); icon.classList.add('text-indigo-200'); }, 1000);
+            }
+        }
+
+        const debouncedSaveGoals = debounce(() => {
+            const goalsEl = document.getElementById('weekly-goals-text');
+            if(goalsEl) { localStorage.setItem(`kairos_goals_${currentProfile}`, goalsEl.innerHTML); flashSaveIndicator(); }
+        });
+
+        const debouncedSaveTable = debounce(() => {
+            guardarDatosEnMemoria(); calcularEstadisticas(); checkHealthStreak(); flashSaveIndicator();
+        }, 500);
+
+        function cerrarModal(id) { const el = document.getElementById(id); if(el) el.classList.add('hidden'); }
+        function mostrarToast(m, c='green') {
+            const t = document.getElementById('toast'); const msg = document.getElementById('toast-message');
+            if(msg) msg.innerText = m;
+            if(t) { t.classList.remove('translate-y-32', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000); }
+        }
+
+        // --- CORE MAIN FUNCIONES RESTAURADAS ---
+        function actualizarNombreUI() { const el = document.getElementById('display-user-name'); if(el) el.innerText = userName; }
         
         function updateLiveClock() {
             const n = new Date();
@@ -621,7 +638,30 @@
                     colorActivo = cat.bgClass; herramientaActiva = cat.id; renderizarPaleta(); 
                     if(cat.id === 'sync') mostrarToast("Vincular: Arrastra para agrupar días.", "blue");
                     else if(cat.id === 'select') mostrarToast("Seleccionar: Arrastra para marcar casillas.", "blue");
-                    else { document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active')); cancelarSeleccion(); }
+                    else { 
+                        // Múltiple pintado/Borrador si hay seleccionadas (BATCH EDITING)
+                        const seleccionadas = document.querySelectorAll('.selected-cell');
+                        if (seleccionadas.length > 0) {
+                            seleccionadas.forEach(el => {
+                                const td = el.parentElement;
+                                td.classList.forEach(c => { if(c.startsWith('bg-') && !c.includes('transparent')) td.classList.remove(c); });
+                                if (cat.id === 'borrar') {
+                                    if(!td.classList.contains('current-day-col')) td.classList.add('bg-transparent');
+                                    el.innerText = ''; el.classList.remove('task-completed');
+                                } else if (cat.id === 'neutral') {
+                                    if(!td.classList.contains('current-day-col')) td.classList.add('bg-transparent');
+                                } else {
+                                    td.classList.add(colorActivo);
+                                }
+                                el.classList.remove('selected-cell');
+                            });
+                            actualizarBarraSeleccion(); debouncedSaveTable();
+                            mostrarToast(`Aplicado a ${seleccionadas.length} casillas`);
+                        } else {
+                            document.querySelectorAll('.sync-active').forEach(el => el.classList.remove('sync-active')); 
+                            cancelarSeleccion(); 
+                        }
+                    }
                 };
                 p.appendChild(btn);
             });
@@ -633,6 +673,14 @@
             cargarConfiguracionAjustes();
             initProfiles();
             cargarTitulo();
+            
+            // Cargar Objetivos
+            const goalsEl = document.getElementById('weekly-goals-text');
+            if(goalsEl) {
+                const savedGoals = localStorage.getItem(`kairos_goals_${currentProfile}`);
+                if(savedGoals) goalsEl.innerHTML = savedGoals;
+            }
+
             actualizarAvatarUI();
             loadWeather();
             updateXP();
@@ -656,9 +704,7 @@
             const stopDrag = () => { 
                 if(isDragging && !isScheduleLocked) { 
                     isDragging = false; 
-                    guardarDatosEnMemoria(); 
-                    calcularEstadisticas(); 
-                    checkHealthStreak(); 
+                    debouncedSaveTable(); 
                 } 
             };
             window.addEventListener('mouseup', stopDrag);
@@ -672,22 +718,6 @@
                 }
             });
         });
-
-        // --- UTILIDADES ---
-        function cerrarModal(id) { 
-            const el = document.getElementById(id);
-            if(el) el.classList.add('hidden'); 
-        }
-
-        function mostrarToast(m, c='green') {
-            const t = document.getElementById('toast'); 
-            const msg = document.getElementById('toast-message');
-            if(msg) msg.innerText = m;
-            if(t) {
-                t.classList.remove('translate-y-32', 'opacity-0'); 
-                setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000);
-            }
-        }
 
         // --- AVATAR SYSTEM ---
         function actualizarAvatarUI() {
@@ -809,7 +839,7 @@
             }
         }
 
-        // --- MODOS: ZEN & LOCK (NUEVO) ---
+        // --- MODOS: ZEN & LOCK ---
         function toggleZenMode() {
             document.body.classList.toggle('zen-mode');
             if(document.body.classList.contains('zen-mode')) {
@@ -829,7 +859,7 @@
                     btn.innerHTML = '<i class="fas fa-lock text-red-500"></i> Desbloquear';
                     btn.classList.add('bg-red-50', 'dark:bg-red-900/20', 'text-red-600', 'border-red-200', 'dark:border-red-800');
                 }
-                cells.forEach(c => c.contentEditable = false);
+                cells.forEach(c => { c.contentEditable = false; c.removeAttribute('draggable'); });
                 cancelarSeleccion();
                 mostrarToast("Horario bloqueado. Navegación segura.", "blue");
             } else {
@@ -837,7 +867,7 @@
                     btn.innerHTML = '<i class="fas fa-lock"></i> Bloquear';
                     btn.classList.remove('bg-red-50', 'dark:bg-red-900/20', 'text-red-600', 'border-red-200', 'dark:border-red-800');
                 }
-                cells.forEach(c => c.contentEditable = true);
+                cells.forEach(c => { c.contentEditable = true; c.setAttribute('draggable', 'true'); });
                 mostrarToast("Horario desbloqueado. Modo de edición.", "green");
             }
         }
@@ -867,7 +897,7 @@
                 if(!td.classList.contains('current-day-col')) td.classList.add('bg-transparent');
                 divEdit.classList.remove('selected-cell');
             });
-            actualizarBarraSeleccion(); guardarDatosEnMemoria(); calcularEstadisticas(); checkHealthStreak(); mostrarToast(`Limpiado.`, "blue");
+            actualizarBarraSeleccion(); debouncedSaveTable(); mostrarToast(`Limpiado.`, "blue");
         }
 
         function cancelarSeleccion() {
@@ -889,6 +919,14 @@
             storageKey = `horarioPersonalPro_${currentProfile}`;
             const el = document.getElementById('app-title');
             if(el) el.innerText = profiles[id];
+            
+            // Recargar objetivos
+            const goalsEl = document.getElementById('weekly-goals-text');
+            if(goalsEl) {
+                const savedGoals = localStorage.getItem(`kairos_goals_${currentProfile}`);
+                goalsEl.innerHTML = savedGoals || '';
+            }
+
             cancelarSeleccion(); renderizarTabla(); cargarHorario(); calcularEstadisticas();
             mostrarToast(`Cambiado al perfil: ${profiles[id]}`);
         }
@@ -926,6 +964,7 @@
                     profiles[newId] = `[Imp] ${d.name || 'Amigo'}`;
                     localStorage.setItem('kairos_profiles', JSON.stringify(profiles));
                     localStorage.setItem(`horarioPersonalPro_${newId}`, d.datos);
+                    if(d.goals) localStorage.setItem(`kairos_goals_${newId}`, d.goals);
                     
                     if(confirm(`¿Aplicar también colores y horas del backup de ${d.name || 'este archivo'}?\n(Afectará todos tus perfiles locales)`)) {
                         if(d.cats) localStorage.setItem('horarioCategorias', JSON.stringify(d.cats));
@@ -961,7 +1000,7 @@
 
         function finalizeTutorial() { cerrarModal('tutorial-modal'); mostrarToast(`¡Dashboard Listo, ${userName}!`); }
 
-        // --- POMODORO ---
+        // --- POMODORO CON NOTIFICACIONES ---
         function toggleTimer() { const widget = document.getElementById('timer-widget'); if(widget){ widget.classList.toggle('hidden'); if(!widget.classList.contains('hidden')) widget.classList.add('flex'); } }
         function playFocusSound(type) {
             stopFocusSound();
@@ -982,6 +1021,9 @@
                         clearInterval(timerInterval); isRunning = false; if(btn) btn.innerText = "Iniciar";
                         new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(()=>{});
                         mostrarToast("¡Foco terminado!", "blue");
+                        if ("Notification" in window && Notification.permission === "granted") {
+                            new Notification("Kairós Elite Pro", { body: "¡Tiempo de Foco Terminado! Tómate un descanso." });
+                        }
                     }
                 }, 1000);
             }
@@ -997,7 +1039,6 @@
             if(el) { userName = el.innerText.trim() || "Usuario"; localStorage.setItem('kairos_userName', userName); }
         }
         
-        // --- CIERRE Y GUARDADO DE HISTORIAL (CORREGIDO) ---
         function archivarSemana() { const m = document.getElementById('modal-cierre-semanal'); if(m) m.classList.remove('hidden'); }
         
         function ejecutarCierreSemanal() {
@@ -1038,14 +1079,14 @@
                     if(clearColors) { c.parentElement.classList.forEach(cls => { if(cls.startsWith('bg-') && !cls.includes('current')) c.parentElement.classList.remove(cls); }); }
                 });
                 
-                guardarDatosEnMemoria(); calcularEstadisticas(); cerrarModal('modal-cierre-semanal'); mostrarToast("Semana guardada con éxito.");
+                debouncedSaveTable(); cerrarModal('modal-cierre-semanal'); mostrarToast("Semana guardada con éxito.");
             } catch(e) {
                 console.error(e);
                 mostrarToast("Error al guardar historial.", "red");
             }
         }
 
-        // --- SALUD / DIAGNÓSTICO DETALLADO ---
+        // --- SALUD / DIAGNÓSTICO ---
         function checkHealthStreak() {
             let horasPorId = { salud: 0, trabajo: 0, proyectos: 0, estudio: 0, ocio: 0 };
             let mapBgToId = {}; categorias.forEach(cat => mapBgToId[cat.bgClass] = cat.id);
@@ -1092,38 +1133,6 @@
             return html;
         }
 
-        // --- HISTORIAL UI ---
-        function abrirModalHistorial() {
-            const container = document.getElementById('historial-contenido');
-            let archive = [];
-            try {
-                const saved = localStorage.getItem('kairos_archive');
-                if(saved) archive = JSON.parse(saved);
-                if(!Array.isArray(archive)) archive = [];
-            } catch(e) { archive = []; }
-            
-            container.innerHTML = '';
-            if (archive.length === 0) { container.innerHTML = '<div class="text-center py-10 opacity-50 font-bold">Aún no has archivado ninguna semana. Usa el botón "Cerrar Sem." cuando termines tu planificación semanal.</div>'; } 
-            else {
-                archive.reverse().forEach((entry, idx) => {
-                    let statsHtml = '';
-                    categorias.forEach(cat => {
-                        if(cat.isSpecial) return; const h = entry.stats[cat.bgClass] || 0;
-                        if(h > 0) statsHtml += `<div class="flex items-center justify-between text-[10px] font-black uppercase"><span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full ${cat.bgClass.replace('100','400')}"></div> ${cat.nombre}</span><span>${h}H</span></div>`;
-                    });
-                    container.innerHTML += `<div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 mb-3 shadow-sm"><div class="flex justify-between items-start mb-3"><div><p class="text-[9px] font-black text-indigo-500 uppercase">${entry.fecha}</p><h4 class="font-black text-slate-800 dark:text-white uppercase tracking-tight">${entry.titulo}</h4></div><button onclick="borrarEntradaHistorial(${archive.length - 1 - idx})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button></div><div class="grid grid-cols-2 gap-x-6 gap-y-1 pt-2 border-t border-slate-50 dark:border-slate-700">${statsHtml}</div></div>`;
-                });
-            }
-            document.getElementById('modal-historial').classList.remove('hidden');
-        }
-
-        function borrarEntradaHistorial(idx) {
-            if(!confirm("¿Eliminar este registro permanente?")) return;
-            let archive = [];
-            try { archive = JSON.parse(localStorage.getItem('kairos_archive')); } catch(e) { return; }
-            archive.splice(idx, 1); localStorage.setItem('kairos_archive', JSON.stringify(archive)); abrirModalHistorial();
-        }
-
         // --- NAVEGACIÓN TECLADO (EXCEL-LIKE) ---
         function setCursorToEnd(el) {
             el.focus();
@@ -1137,6 +1146,7 @@
             }
         }
 
+        // --- TABLA Y DRAG & DROP ---
         function renderizarTabla() {
             const head = document.getElementById('schedule-header'); const body = document.getElementById('schedule-body');
             if(!head || !body) return;
@@ -1159,7 +1169,9 @@
                         const edit = document.createElement('div');
                         
                         edit.className = `editable-content w-full h-full min-h-[35px] p-2 rounded-lg outline-none ${fontSize} font-bold text-slate-800 dark:text-white transition-all`;
-                        edit.contentEditable = !isScheduleLocked; edit.dataset.dia = di; edit.dataset.hora = `${h.toString().padStart(2,'0')}:${m}`;
+                        edit.contentEditable = !isScheduleLocked; 
+                        if(!isScheduleLocked) edit.setAttribute('draggable', 'true');
+                        edit.dataset.dia = di; edit.dataset.hora = `${h.toString().padStart(2,'0')}:${m}`;
                         
                         edit.oninput = () => {
                             if(isScheduleLocked) return;
@@ -1172,8 +1184,51 @@
                             if(edit.classList.contains('sync-active')) {
                                 const txt = edit.innerText; document.querySelectorAll('.sync-active').forEach(el => { if(el !== edit) el.innerText = txt; });
                             }
+                            debouncedSaveTable(); // Usar debounce
                         };
 
+                        // Eventos para Drag & Drop
+                        edit.addEventListener('dragstart', (e) => {
+                            if(isScheduleLocked) { e.preventDefault(); return; }
+                            window.draggedCell = edit;
+                            e.dataTransfer.effectAllowed = 'move';
+                            // Añadir algo de estilo al arrastrar
+                            setTimeout(() => { edit.classList.add('opacity-50'); }, 0);
+                        });
+                        
+                        edit.addEventListener('dragend', () => {
+                            edit.classList.remove('opacity-50');
+                            window.draggedCell = null;
+                        });
+                        
+                        edit.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+                        
+                        edit.addEventListener('drop', (e) => {
+                            e.preventDefault();
+                            if(isScheduleLocked || !window.draggedCell || window.draggedCell === edit) return;
+                            
+                            // Mover Texto
+                            edit.innerText = window.draggedCell.innerText;
+                            // Mover Color
+                            const sourceTd = window.draggedCell.parentElement;
+                            let sourceColor = 'bg-transparent';
+                            sourceTd.classList.forEach(cls => { if(cls.startsWith('bg-') && !cls.includes('transparent') && !cls.includes('current')) sourceColor = cls; });
+                            
+                            paintCellExplicit(td, sourceColor, 'move');
+                            
+                            // Mover Estado Completado
+                            if(window.draggedCell.classList.contains('task-completed')) edit.classList.add('task-completed'); 
+                            else edit.classList.remove('task-completed');
+
+                            // Limpiar Origen
+                            window.draggedCell.innerText = '';
+                            window.draggedCell.classList.remove('task-completed');
+                            paintCellExplicit(sourceTd, 'bg-transparent', 'move');
+
+                            debouncedSaveTable();
+                        });
+
+                        // Navegación teclado
                         edit.addEventListener('keydown', (e) => {
                             if(isScheduleLocked) return;
                             const currentTr = td.parentElement;
@@ -1233,8 +1288,8 @@
                             else if (colorActivo !== 'bg-transparent' || herramientaActiva === 'borrar') { paintCell(td); }
                         }, {passive: false});
                         
-                        edit.onblur = () => { if(!isScheduleLocked) { guardarDatosEnMemoria(); calcularEstadisticas(); } };
-                        edit.ondblclick = () => { if(!isScheduleLocked && edit.innerText.trim()){ edit.classList.toggle('task-completed'); if(edit.classList.contains('task-completed')) addXP(10); guardarDatosEnMemoria(); } };
+                        edit.onblur = () => { if(!isScheduleLocked) { debouncedSaveTable(); } };
+                        edit.ondblclick = () => { if(!isScheduleLocked && edit.innerText.trim()){ edit.classList.toggle('task-completed'); if(edit.classList.contains('task-completed')) addXP(10); debouncedSaveTable(); } };
                         td.appendChild(edit); tr.appendChild(td);
                     });
                     body.appendChild(tr);
@@ -1251,6 +1306,15 @@
             } 
             else if (herramientaActiva === 'neutral') { if(!td.classList.contains('current-day-col')) td.classList.add('bg-transparent'); } 
             else if (herramientaActiva !== 'sync' && herramientaActiva !== 'select') { td.classList.add(colorActivo); }
+        }
+
+        function paintCellExplicit(td, bgColor, action) {
+            td.classList.forEach(c => { if(c.startsWith('bg-') && !c.includes('transparent')) td.classList.remove(c); });
+            if (action === 'borrar' || bgColor === 'bg-transparent' || bgColor === 'bg-white') {
+                if(!td.classList.contains('current-day-col')) td.classList.add('bg-transparent');
+            } else {
+                td.classList.add(bgColor);
+            }
         }
 
         function guardarDatosEnMemoria() {
@@ -1285,19 +1349,35 @@
             const container = document.getElementById('stats-container'); 
             if(!container) return;
             container.innerHTML = '';
-            let counts = {}; categorias.forEach(cat => { if(!cat.isSpecial) counts[cat.bgClass] = 0; });
+            
+            let counts = {}; 
+            let countsCompletados = {}; // Para el gráfico de Dona
+            
+            categorias.forEach(cat => { 
+                if(!cat.isSpecial) { counts[cat.bgClass] = 0; countsCompletados[cat.bgClass] = 0; }
+            });
+            
             let total = 0;
+            let totalCompletados = 0;
+
             document.querySelectorAll('.editable-content').forEach(c => {
                 let bg = null; c.parentElement.classList.forEach(cls => { if(counts[cls]!==undefined) bg = cls; });
-                if(bg) { counts[bg] += 0.5; total += 0.5; }
+                if(bg) { 
+                    counts[bg] += 0.5; total += 0.5; 
+                    if (c.classList.contains('task-completed')) {
+                        countsCompletados[bg] += 0.5;
+                        totalCompletados += 0.5;
+                    }
+                }
             });
+            
             categorias.forEach(cat => {
                 if(cat.isSpecial) return;
                 const h = counts[cat.bgClass];
                 const percentage = total > 0 ? (h / total) * 100 : 0;
                 const color = cat.bgClass.replace('100','500');
                 container.innerHTML += `
-                    <div class="bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                    <div class="bg-white dark:bg-slate-800 p-3 sm:p-4 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-center">
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-[7px] sm:text-[8px] font-black text-slate-400 uppercase truncate">${cat.nombre}</span>
                             <span class="text-[10px] sm:text-xs font-black dark:text-white">${h}H</span>
@@ -1307,10 +1387,83 @@
                         </div>
                     </div>`;
             });
+
+            // Renderizar Gráfico de Dona (ahora basado en el horario planificado total)
+            renderizarDona(counts, total);
+        }
+
+        function renderizarDona(countsPlanificados, totalPlanificados) {
+            const canvas = document.getElementById('donutChart');
+            const emptyState = document.getElementById('donut-empty-state');
+            
+            if(!canvas) return;
+
+            if(totalPlanificados === 0) {
+                if(emptyState) emptyState.classList.remove('hidden');
+                canvas.style.display = 'none';
+                if(chartInstance) { chartInstance.destroy(); chartInstance = null; }
+                return;
+            } else {
+                if(emptyState) emptyState.classList.add('hidden');
+                canvas.style.display = 'block';
+            }
+
+            const labels = [];
+            const data = [];
+            const bgColors = [];
+
+            categorias.forEach(cat => {
+                if(!cat.isSpecial && countsPlanificados[cat.bgClass] > 0) {
+                    labels.push(cat.nombre);
+                    data.push(countsPlanificados[cat.bgClass]);
+                    bgColors.push(hexColors[cat.bgClass] || '#9ca3af');
+                }
+            });
+
+            const ctx = canvas.getContext('2d');
+            if (chartInstance) {
+                chartInstance.data.labels = labels;
+                chartInstance.data.datasets[0].data = data;
+                chartInstance.data.datasets[0].backgroundColor = bgColors;
+                chartInstance.update();
+            } else {
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: bgColors,
+                            borderWidth: 2,
+                            borderColor: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) { return ` ${context.label}: ${context.raw} hrs planificadas`; }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         function inicializarModoOscuro() { if(localStorage.getItem('theme')==='dark') document.documentElement.classList.add('dark'); }
-        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light'); }
+        function toggleDarkMode() { 
+            document.documentElement.classList.toggle('dark'); 
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light'); 
+            if(chartInstance) {
+                chartInstance.data.datasets[0].borderColor = document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff';
+                chartInstance.update();
+            }
+        }
         function cargarConfiguracionAjustes() {
             const c = localStorage.getItem('horarioCategorias'); 
             if(c) {
@@ -1332,15 +1485,54 @@
         function guardarTitulo() { const el = document.getElementById('app-title'); if(el) { const newTitle = el.innerText.trim(); if(newTitle) { profiles[currentProfile] = newTitle; localStorage.setItem('kairos_profiles', JSON.stringify(profiles)); initProfiles(); } } }
         function marcarDiaActual() { window.currentDayIndex = (new Date().getDay() + 6) % 7; }
 
-        function rellenarDescansos() {
-            if(isScheduleLocked) return;
-            const cat = categorias.find(x => x.id==='ocio'); let n = 0;
-            document.querySelectorAll('.editable-content').forEach(c => {
-                if(!c.innerText && !Array.from(c.parentElement.classList).some(cl => cl.startsWith('bg-') && !cl.includes('current'))){
-                    c.parentElement.classList.add(cat.bgClass); c.innerText = "Descanso Libre"; n++;
+        function exportarICS() {
+            const dataStr = localStorage.getItem(storageKey);
+            if(!dataStr) return mostrarToast("No hay datos para exportar", "red");
+            
+            const data = JSON.parse(dataStr);
+            let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Kairos Elite Pro//ES\nCALSCALE:GREGORIAN\n";
+            
+            // Obtener fecha del lunes de esta semana
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon...
+            const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            const monday = new Date(today);
+            monday.setDate(today.getDate() + distanceToMonday);
+            
+            for(let diaIdx in data) {
+                for(let horaStr in data[diaIdx]) {
+                    const item = data[diaIdx][horaStr];
+                    if(!item.t) continue;
+                    
+                    const [h, m] = horaStr.split(':');
+                    const startDate = new Date(monday);
+                    startDate.setDate(monday.getDate() + parseInt(diaIdx));
+                    startDate.setHours(parseInt(h), parseInt(m), 0);
+                    
+                    const endDate = new Date(startDate);
+                    endDate.setMinutes(endDate.getMinutes() + 30);
+                    
+                    const formatICSDate = (date) => {
+                        return date.toISOString().replace(/-|:|\.\d+/g, '');
+                    };
+
+                    icsContent += "BEGIN:VEVENT\n";
+                    icsContent += `DTSTART:${formatICSDate(startDate)}\n`;
+                    icsContent += `DTEND:${formatICSDate(endDate)}\n`;
+                    icsContent += `SUMMARY:${item.t}\n`;
+                    icsContent += "END:VEVENT\n";
                 }
-            });
-            if(n){ guardarDatosEnMemoria(); calcularEstadisticas(); checkHealthStreak(); mostrarToast(`Auto-relleno: ${n} bloques.`); }
+            }
+            icsContent += "END:VCALENDAR";
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${profiles[currentProfile] || 'Horario'}.ics`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            mostrarToast("¡Calendario ICS Exportado!");
         }
 
         function exportarPDF() {
@@ -1383,7 +1575,8 @@
 
         function exportJSON() { 
             const ttl = document.getElementById('app-title');
-            const b = new Blob([JSON.stringify({datos:localStorage.getItem(storageKey), cats:categorias, hStart:horaInicio, hEnd:horaFin, fmt:formatoHora, title:ttl?ttl.innerText:'Horario', name:userName, archive: localStorage.getItem('kairos_archive'), fontSize: fontSize})], {type:'application/json'}); 
+            const goals = document.getElementById('weekly-goals-text') ? document.getElementById('weekly-goals-text').innerHTML : '';
+            const b = new Blob([JSON.stringify({datos:localStorage.getItem(storageKey), cats:categorias, hStart:horaInicio, hEnd:horaFin, fmt:formatoHora, title:ttl?ttl.innerText:'Horario', name:userName, archive: localStorage.getItem('kairos_archive'), fontSize: fontSize, goals: goals})], {type:'application/json'}); 
             const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kairos_elite_backup.json'; a.click(); 
         }
         
