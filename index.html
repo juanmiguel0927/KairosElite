@@ -291,7 +291,7 @@
 
     <!-- MODALES -->
 
-    <!-- MODAL AVATAR -->
+    <!-- MODAL AVATAR CON VISTA PREVIA -->
     <div id="modal-avatar" class="fixed inset-0 z-[6000] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 max-w-sm w-full rounded-t-[2.5rem] sm:rounded-[2rem] p-6 text-center shadow-2xl border border-slate-700 mobile-modal-anim">
             <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
@@ -400,7 +400,7 @@
                 
                 <div class="grid grid-cols-2 gap-2 pt-2 border-t dark:border-slate-700 text-slate-800 dark:text-white">
                     <button onclick="exportJSON()" class="p-2 bg-slate-100 dark:bg-slate-700 rounded-xl font-black text-[8px] uppercase flex flex-col items-center gap-1"><i class="fas fa-download text-sm"></i> Backup</button>
-                    <button onclick="cerrarModal('modal-ajustes'); gestionarPerfiles();" class="p-2 bg-slate-900 text-white rounded-xl font-black text-[8px] uppercase flex flex-col items-center gap-1"><i class="fas fa-users text-sm"></i> Importar</button>
+                    <button onclick="cerrarModal('modal-ajustes'); gestionarPerfiles();" class="p-2 bg-slate-900 text-white rounded-xl font-black text-[8px] uppercase flex flex-col items-center gap-1"><i class="fas fa-users text-sm"></i> Importar Amigo</button>
                     <input type="file" id="json-import" class="hidden" accept=".json" onchange="importJSON(event)">
                 </div>
 
@@ -414,7 +414,7 @@
         </div>
     </div>
 
-    <!-- MODAL GUÍA MÉDICA DETALLADA -->
+    <!-- MODAL GUÍA MÉDICA DETALLADA (ACTUALIZADA Y COMPLETA) -->
     <div id="modal-ayuda" class="fixed inset-0 z-[4500] modal-overlay hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-t-[2.5rem] sm:rounded-[3rem] p-0 w-full max-w-2xl shadow-2xl h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-700 mobile-modal-anim">
             <div class="bg-emerald-600 dark:bg-emerald-800 px-6 py-4 sm:px-8 sm:py-6 text-white flex justify-between items-center">
@@ -424,17 +424,32 @@
             <div id="contenido-guia-cientifica" class="p-5 sm:p-8 overflow-y-auto space-y-6 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-xs sm:text-sm">
                 
                 <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-bed"></i> 1. Sueño y Consolidación</h4>
+                    <h4 class="font-black text-indigo-700 dark:text-indigo-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-bed"></i> 1. Sueño y Sistema Glinfático</h4>
                     <p class="font-semibold text-slate-700 dark:text-slate-300">Sugerencia: Adultos 7 a 9 horas | Adolescentes 8 a 10 horas.</p>
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">Durante el sueño profundo y la fase REM, el cerebro activa el sistema glinfático para eliminar toxinas y residuos metabólicos acumulados durante el día. Es el momento crítico para la neuroplasticidad.</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">Durante el sueño profundo y la fase REM, las células gliales del cerebro se encogen, permitiendo que el líquido cefalorraquídeo fluya rápidamente a través del cerebro (Sistema Glinfático). Este proceso elimina toxinas como la proteína beta-amiloide (asociada al Alzheimer). Además, el sueño es el evento neuroplástico principal donde el cerebro consolida la memoria y fija las habilidades motoras y analíticas aprendidas en el día. Reducir el sueño destruye la capacidad de retención.</p>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4636982/" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-indigo-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Estudio: El Sistema Glinfático (NIH/PubMed)</a>
                 </div>
 
                 <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
-                    <h4 class="font-black text-blue-700 dark:text-blue-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo (Deep Work)</h4>
-                    <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques de 25 a 90 min + 15 min de pausa total.</p>
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">El cerebro humano no está diseñado para la atención ininterrumpida. Forzar más de 90 minutos agota drásticamente la glucosa prefrontal, provocando fatiga. Usa el /pomodoro.</p>
+                    <h4 class="font-black text-blue-700 dark:text-blue-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-brain"></i> 2. Foco Profundo y Fatiga</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Método: Bloques BRAC (90 min) + 15 min de pausa.</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">La biología humana opera bajo el Ciclo Básico de Reposo-Actividad (BRAC). Intentar forzar la atención analítica por más de 90 minutos ininterrumpidos agota drásticamente las reservas de glucosa y oxígeno en la corteza prefrontal, precipitando fatiga cognitiva y errores. Las pausas sin pantallas (mirar a lo lejos, caminar) reactivan la 'Red Neuronal por Defecto' (DMN), permitiendo procesar información en segundo plano y restaurar la atención.</p>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7330456/" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-blue-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Estudio: Fatiga Cognitiva (NIH/PubMed)</a>
                 </div>
 
+                <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-teal-700 dark:text-teal-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-clock"></i> 3. Ritmo Circadiano</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300 leading-relaxed italic">"Hacer la actividad biológicamente correcta en el momento correcto".</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed"><b>Mañana (CAR):</b> La Respuesta al Despertar del Cortisol (CAR) eleva la alerta. Es el estado biológico cumbre para la lógica pesada, matemáticas y toma de decisiones complejas. <br><b>Tarde:</b> Se alcanza el pico de temperatura corporal (fuerza de agarre y tiempo de reacción máximos), ideal para entrenamiento deportivo o trabajo mecánico/fluido. <br><b>Noche (DLMO):</b> El Inicio de la Secreción de Melatonina con Luz Tenue prepara al cerebro para apagarse. Ideal para lectura relajada y evitar luz azul.</p>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6200866/" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-teal-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Estudio: Biología Circadiana (NIH/PubMed)</a>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm avoid-break">
+                    <h4 class="font-black text-emerald-700 dark:text-emerald-400 mb-1 sm:mb-2 flex items-center gap-2 sm:text-lg"><i class="fas fa-running"></i> 4. Neuroplasticidad y Movimiento</h4>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">Recomendación: 150-300 min semanales.</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 sm:mt-2 leading-relaxed">El ejercicio físico cardiovascular y de fuerza (especialmente cuando hace sudar) estimula la liberación del Factor Neurotrófico Derivado del Cerebro (BDNF). El BDNF actúa literalmente como un 'fertilizante' neurológico, facilitando el crecimiento de nuevas neuronas en el hipocampo (neurogénesis) y fortaleciendo las sinapsis. Es el mejor antídoto para prevenir el deterioro del sedentarismo tecnológico.</p>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4915811/" target="_blank" class="text-[8px] sm:text-[9px] uppercase font-black text-emerald-500 underline mt-2 block tracking-widest"><i class="fas fa-link"></i> Estudio: Ejercicio y BDNF (NIH/PubMed)</a>
+                </div>
             </div>
         </div>
     </div>
@@ -446,7 +461,7 @@
                 <h3 class="text-lg sm:text-xl font-black flex items-center gap-2 uppercase italic tracking-tighter">Escáner Bio-Salud y Rendimiento</h3>
                 <button onclick="cerrarModal('modal-analisis')" aria-label="Cerrar"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
-            <div id="reporte-contenido" class="p-5 sm:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10">
+            <div id="reporte-contenido" class="p-5 sm:p-8 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 no-scrollbar flex-1 pb-10 text-xs sm:text-sm">
             </div>
         </div>
     </div>
@@ -1086,7 +1101,7 @@
             }
         }
 
-        // --- SALUD / DIAGNÓSTICO ---
+        // --- SALUD / DIAGNÓSTICO DETALLADO ---
         function checkHealthStreak() {
             let horasPorId = { salud: 0, trabajo: 0, proyectos: 0, estudio: 0, ocio: 0 };
             let mapBgToId = {}; categorias.forEach(cat => mapBgToId[cat.bgClass] = cat.id);
@@ -1118,17 +1133,17 @@
             else if (cargaCognitiva >= 45) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ ESTADO DE ALTO RENDIMIENTO:</b> Estás en un ritmo de trabajo de élite, pero requiere un sueño estricto de 8 a 9 horas innegociables para no entrar en deuda cognitiva.</p></div>`; } 
             else if (cargaCognitiva >= 20) { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ RITMO SALUDABLE:</b> Excelente. Tu cerebro tiene tiempo suficiente para entrar en "Red Neuronal por Defecto", lo cual es biológicamente esencial para la creatividad y la resolución de problemas complejos.</p></div>`; }
             else { html += `<div class="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-2xl border border-blue-200 dark:border-blue-800/50"><p class="text-sm font-semibold"><b>ℹ️ CARGA LIGERA:</b> Tienes mucha capacidad mental libre. Buen momento para introducir nuevos proyectos desafiantes o cursos intensivos.</p></div>`; }
-            html += `<a href="https://www.medicalnewstoday.com/articles/cognitive-fatigue" target="_blank" class="text-[10px] uppercase font-black tracking-widest text-indigo-500 underline mt-4 inline-block"><i class="fas fa-link"></i> Ciencia del Foco (Medical News)</a></div>`;
+            html += `<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4911781/" target="_blank" class="text-[10px] uppercase font-black tracking-widest text-indigo-500 underline mt-4 inline-block"><i class="fas fa-link"></i> Burnout and the Brain (NCBI)</a></div>`;
 
             html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break"><h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-couch text-yellow-500"></i> Recuperación Parasimpática</h4><p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Ocio: ${horasOcio} horas</p>`;
-            if (horasOcio < 12) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ DÉFICIT DE RECUPERACIÓN:</b> Tu sistema no tiene tiempo para desactivar el estrés. Esto mantiene tu sistema nervioso autónomo en modo "alerta", reduciendo drásticamente la calidad del sueño profundo.</p></div>`; } 
-            else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ SISTEMA BALANCEADO:</b> Le estás dando a tu cuerpo el tiempo biológico exacto para reparar tejidos celulares y reducir la inflamación sistémica.</p></div>`; }
+            if (horasOcio < 12) { html += `<div class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-2xl border border-red-200 dark:border-red-800/50"><p class="text-sm font-semibold"><b>⚠️ DÉFICIT DE RECUPERACIÓN:</b> Tu sistema no tiene tiempo para desactivar el estrés. Esto mantiene tu sistema nervioso autónomo en modo "alerta" (simpático), reduciendo drásticamente la calidad del sueño profundo.</p></div>`; } 
+            else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ SISTEMA BALANCEADO:</b> Le estás dando a tu cuerpo el tiempo biológico exacto para activar el tono parasimpático, reparar tejidos celulares y reducir la inflamación sistémica.</p></div>`; }
             html += `</div>`;
 
             html += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-4 avoid-break"><h4 class="text-lg font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2 uppercase italic tracking-tighter"><i class="fas fa-running text-emerald-500"></i> Salud Metabólica</h4><p class="mb-4 text-slate-700 dark:text-slate-300 font-bold text-sm">Salud/Movimiento: ${horasSalud} horas</p>`;
-            if (horasSalud < 3.5) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ RIESGO DE SEDENTARISMO:</b> El flujo sanguíneo cerebral disminuye tras largos periodos sentado. Agrega pequeños bloques de 15 min de movimiento intenso para "oxigenar" las neuronas.</p></div>`; } 
-            else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ ESCUDO METABÓLICO:</b> Mantienes activa la producción natural de BDNF, protegiendo eficientemente tu cerebro contra el deterioro del estrés y la inactividad física.</p></div>`; }
-            html += `</div>`;
+            if (horasSalud < 3.5) { html += `<div class="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl border border-orange-200 dark:border-orange-800/50"><p class="text-sm font-semibold"><b>⚡ RIESGO DE SEDENTARISMO:</b> El flujo sanguíneo cerebral disminuye tras largos periodos sentado, provocando hipoxia celular leve. Agrega pequeños bloques de 15 min de movimiento intenso para "oxigenar" las neuronas.</p></div>`; } 
+            else { html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/50"><p class="text-sm font-semibold"><b>✅ ESCUDO METABÓLICO:</b> Mantienes activa la producción natural de BDNF, protegiendo eficientemente tu cerebro contra el estrés oxidativo y la atrofia por inactividad física.</p></div>`; }
+            html += `<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4915811/" target="_blank" class="text-[10px] uppercase font-black tracking-widest text-emerald-500 underline mt-4 inline-block"><i class="fas fa-link"></i> Exercise and BDNF (NCBI)</a></div>`;
             
             return html;
         }
@@ -1184,7 +1199,7 @@
                             if(edit.classList.contains('sync-active')) {
                                 const txt = edit.innerText; document.querySelectorAll('.sync-active').forEach(el => { if(el !== edit) el.innerText = txt; });
                             }
-                            debouncedSaveTable(); // Usar debounce
+                            debouncedSaveTable(); 
                         };
 
                         // Eventos para Drag & Drop
@@ -1192,7 +1207,6 @@
                             if(isScheduleLocked) { e.preventDefault(); return; }
                             window.draggedCell = edit;
                             e.dataTransfer.effectAllowed = 'move';
-                            // Añadir algo de estilo al arrastrar
                             setTimeout(() => { edit.classList.add('opacity-50'); }, 0);
                         });
                         
@@ -1351,7 +1365,7 @@
             container.innerHTML = '';
             
             let counts = {}; 
-            let countsCompletados = {}; // Para el gráfico de Dona
+            let countsCompletados = {}; 
             
             categorias.forEach(cat => { 
                 if(!cat.isSpecial) { counts[cat.bgClass] = 0; countsCompletados[cat.bgClass] = 0; }
@@ -1388,7 +1402,6 @@
                     </div>`;
             });
 
-            // Renderizar Gráfico de Dona (ahora basado en el horario planificado total)
             renderizarDona(counts, total);
         }
 
